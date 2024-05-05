@@ -35,21 +35,19 @@
     }, {
       "command": "code-anonymizer.unanonymizeAndPaste",
       "title": "Unanonymize and Paste Code"
-    }]
-  },
-
-
-  "menus": {
-    "editor/context": [
+    }],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "code-anonymizer.anonymizeAndCopy",
+          "when": "editorTextFocus"
+      },
       {
-        "command": "code-anonymizer.anonymizeAndCopy",
-        "when": "editorTextFocus"
-    },
-    {
-        "command": "code-anonymizer.unanonymizeAndPaste",
-        "when": "editorTextFocus"
+          "command": "code-anonymizer.unanonymizeAndPaste",
+          "when": "editorTextFocus"
+      }
+      ]
     }
-    ]
   },
   "scripts": {
     "lint": "eslint .",
