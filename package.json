@@ -1,0 +1,68 @@
+{
+  "name": "code-anonymizer",
+  "displayName": "Code Anonymizer",
+  "description": "Copy-paste an anonymized version of your code to and from VS Code seamlessly",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.88.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:code-anonymizer.anonymizeAndCopy"
+  ],
+  "main": "./extension.js",
+  
+  "contributes": {
+    "keybindings": [
+      {
+        "command": "code-anonymizer.anonymizeAndCopy",
+        "key": "ctrl+shift+alt+C",
+        "mac": "ctrl+shift+alt+C",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "code-anonymizer.unanonymizeAndPaste",
+        "key": "ctrl+shift+alt+V",
+        "mac": "ctrl+shift+alt+V",
+        "when": "editorTextFocus"
+      }
+    ],
+    "commands": [{
+      "command": "code-anonymizer.anonymizeAndCopy",
+      "title": "Anonymize and Copy Code"
+    }, {
+      "command": "code-anonymizer.unanonymizeAndPaste",
+      "title": "Unanonymize and Paste Code"
+    }]
+  },
+
+
+  "menus": {
+    "editor/context": [
+      {
+        "command": "code-anonymizer.anonymizeAndCopy",
+        "when": "editorTextFocus"
+    },
+    {
+        "command": "code-anonymizer.unanonymizeAndPaste",
+        "when": "editorTextFocus"
+    }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.89.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5",
+    "@vscode/test-cli": "^0.0.8",
+    "@vscode/test-electron": "^2.3.9"
+  }
+}
