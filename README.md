@@ -1,6 +1,10 @@
-# code-anonymizer-vs-code-extension README
+# Code Sanitizer
 
-This is the README for your extension "code-anonymizer-vs-code-extension". After writing up a brief description, we recommend including the following sections.
+This extension allows to copy-paste code to and from VS code without sharing anything else than code keywords.
+
+For example, when using SQL, words like SELECT and FROM will stay the same, but all table and field names will be replaced by a random dictionary word.
+
+This allows to paste code into tools like chatGPT, or even public forums, without sharing any company secrets.
 
 ## Features
 
