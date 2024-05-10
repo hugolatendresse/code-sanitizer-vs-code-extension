@@ -28,7 +28,7 @@ class Anonymizer {
             if (!this.wordList.length) {
                 throw new Error("The word list has been exhausted.");
             }
-            return this.wordList.pop();
+            return this.wordList.pop().toLowerCase();
         } else {
             throw new Error(`Unexpected token mode: ${this.tokenMode}`);
         }
