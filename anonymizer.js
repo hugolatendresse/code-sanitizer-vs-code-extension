@@ -1,5 +1,5 @@
 const sqlReservedWordsUpper = require('./reserved_words');
-const shortWords = require('./short_word_list');
+const shortWords = require('./shorter_word_list');
 
 class Anonymizer {
     constructor(tokenMode = 'dictionary') {
