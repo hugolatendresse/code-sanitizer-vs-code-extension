@@ -1,19 +1,3 @@
-// const assert = require('assert');
-
-// // You can import and use all API from the 'vscode' module
-// // as well as import your extension to test it
-// const vscode = require('vscode');
-// // const myExtension = require('../extension');
-
-// suite('Extension Test Suite', () => {
-// 	vscode.window.showInformationMessage('Start all tests.');
-
-// 	test('Sample test', () => {
-// 		assert.strictEqual(-1, [1, 2, 3].indexOf(5));
-// 		assert.strictEqual(-1, [1, 2, 3].indexOf(0));
-// 	});
-// });
-
 // to run: npm test
 
 
@@ -85,7 +69,6 @@ suite('Extension Test Suite', () => {
 
 	
     test('Test 03 unanonymizeAndPaste ultra simple', async () => {
-		// An editor is created and writes something in a first script
 		let doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		let editor = await vscode.window.showTextDocument(doc);
 		let document = editor.document;
@@ -100,6 +83,10 @@ suite('Extension Test Suite', () => {
 		// Copy and sanitize
 		await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
 
+		// // Clear the editor
+		// await vscode.commands.executeCommand('editor.action.selectAll');
+		// await vscode.commands.executeCommand('editor.action.deleteLines');
+
 		// Paste at same place
 		await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
 
@@ -107,10 +94,7 @@ suite('Extension Test Suite', () => {
 		// Copy all text in the editor
 		editor.selection = new vscode.Selection(0, 0, document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
 		
-		// // Clear the editor
-		// await vscode.commands.executeCommand('editor.action.selectAll');
-		// await vscode.commands.executeCommand('editor.action.deleteLines');
-
+		
 		const text_before_helloworld = document.getText();
 		printDebugInfo("text_before_priting_hello_world", text_before_helloworld);
 		
