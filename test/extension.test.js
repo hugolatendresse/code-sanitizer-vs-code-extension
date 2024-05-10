@@ -79,11 +79,78 @@ suite('Extension Test Suite', () => {
 		});
     });
 
+
 	// TODO copy back full test
     // test('Test 02 unanonymizeAndPaste all sanitized', async () => {
 
+	
+    test('Test 03 unanonymizeAndPaste ultra simple', async () => {
+		// An editor is created and writes something in a first script
+		let doc = await vscode.workspace.openTextDocument({ content: ' ' });
+		let editor = await vscode.window.showTextDocument(doc);
+		let document = editor.document;
+		assert.ok(editor, 'No active editor');
+		const originalText = `thisisa verysimple testfor theunanonymizefunction`;
+		await editor.edit(editBuilder => {
+			editBuilder.insert(new vscode.Position(0, 0), originalText);
+		});
+		editor.selection = new vscode.Selection(0, 0, 0, originalText.length);
+		printDebugInfo("originalText (should be full length and unsanitized", originalText);
 
-    test('Test 03 unanonymizeAndPaste all sanitized but only half', async () => {
+		// Copy and sanitize
+		await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
+
+		// Paste at same place
+		await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+
+	
+		// Copy all text in the editor
+		editor.selection = new vscode.Selection(0, 0, document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
+		
+		// // Clear the editor
+		// await vscode.commands.executeCommand('editor.action.selectAll');
+		// await vscode.commands.executeCommand('editor.action.deleteLines');
+
+		const text_before_helloworld = document.getText();
+		printDebugInfo("text_before_priting_hello_world", text_before_helloworld);
+		
+		
+		// Replace all text in the editor with "hello world"
+		// Start a new edit operation
+		await editor.edit(editBuilder => {
+			// Create a range that covers the entire document
+			let range = new vscode.Range(
+				document.positionAt(0),
+				document.positionAt(document.getText().length)
+			);
+
+			// Replace the range with "hello world"
+			editBuilder.replace(range, "hello world");
+		});
+
+		printDebugInfo("text_after_priting_hello_world", document.getText());
+		
+		// Print content of the clipboard
+		const clipboardText = await vscode.env.clipboard.readText();
+		printDebugInfo("clipboardText (should be full length and sanitized)", clipboardText);
+		// Replace all text in the editor with the unsanitized text
+		await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
+
+		printDebugInfo("all document just after unanonymize and paste", document.getText());
+
+		// Assert that the finalText is equal to the originalTextHalf
+		printDebugInfo("finalText (should unsanitized)", document.getText());
+		printDebugInfo("originalText (unsanitized)", originalText);
+		assert.strictEqual(document.getText(), originalText);
+
+		printDebugInfo("THIS IS THE END OF TEST 3", 0);
+		printDebugInfo("THIS IS THE END OF TEST 3", 0);
+		printDebugInfo("THIS IS THE END OF TEST 3", 0);
+		printDebugInfo("THIS IS THE END OF TEST 3", 0);
+		printDebugInfo("THIS IS THE END OF TEST 3", 0);
+    });
+
+    test('Test 04 unanonymizeAndPaste all sanitized but only half', async () => {
 		// An editor is created and writes something in a first script
 		let doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		let editor = await vscode.window.showTextDocument(doc);
@@ -166,6 +233,6 @@ suite('Extension Test Suite', () => {
 		assert.strictEqual(finalText, originalTextHalf);
     });
 
-	// TODO    test('Test 02 unanonymizeAndPaste with SQL keywords', async () => {
+	// TODO    test('Test 05 unanonymizeAndPaste with SQL keywords', async () => {
 
 });
