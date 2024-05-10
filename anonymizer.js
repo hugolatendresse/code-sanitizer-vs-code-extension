@@ -38,14 +38,16 @@ class Anonymizer {
         tokens.forEach(token => {
             const upperToken = token.toUpperCase();
             // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
-            if (!sqlReservedWordsUpper.includes(upperToken) && !this.mapping.hasOwnProperty(token)) {
+            if (!sqlReservedWordsUpper.includes(upperToken)) {
+                if (!this.mapping.hasOwnProperty(token)) {
                     this.mapping[token] = this.generateRandomString();
                 }
-            query = this.replaceInString(token, this.mapping[token], query);
+                query = this.replaceInString(token, this.mapping[token], query);
+            }
         });
         return query;
     }
-
+    
     unanonymize(query) {
         Object.entries(this.mapping).forEach(([originalToken, sanitizedToken]) => {
             query = this.replaceInString(sanitizedToken, originalToken, query);
