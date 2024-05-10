@@ -6,7 +6,7 @@ Copy-paste code to and from VS code without sharing anything else than code keyw
 
 For example, when using SQL, words like SELECT and FROM will stay the same, but all table and field names will be replaced by a random dictionary word.
 
-This allows to paste code into tools like chatGPT, or even public forums, without sharing any company secrets.
+This allows to paste code into tools like ChatGPT, or even public forums, without sharing any company secrets.
 
 /* Only supports SQL for now */
 
