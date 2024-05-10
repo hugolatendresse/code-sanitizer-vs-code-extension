@@ -28,31 +28,64 @@ function printDebugInfo(someName, someVar) {
     console.log("#######################################\n");
 }
 
-suite('Original Test Suite', () => {
+suite('Extension Test Suite', () => {
 
-	test('Test anonymizeAndCopy function 00', async () => {
+	test('Test 00 anonymizeAndCopy all sanitized', async () => {
 		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		const editor = await vscode.window.showTextDocument(doc);
 		assert.ok(editor, 'No active editor');
 		editor.selection = new vscode.Selection(0, 0, 0, 10);
+		const originalText = 'table2.somename allthe01 wordshere 23432 shouldbe.sanitized0';
 		await editor.edit(editBuilder => {
-			editBuilder.replace(editor.selection, 'Test String');
+			editBuilder.replace(editor.selection, originalText);
 		});
-
-		// Act
 		await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
-
-		// Assert
 		const clipboardText = await vscode.env.clipboard.readText();
-		assert.notStrictEqual(clipboardText, 'Test String');
+		assert.notStrictEqual(clipboardText, originalText);
+		// Tokenize the original text and make sure that no token is the same as before
+		const tokens = originalText.match(/\b\w+\b/g);
+		tokens.forEach(token => {
+			assert.strictEqual(clipboardText.includes(token), false);
+		});
+    });
+	
+    test('Test 01 anonymizeAndCopy with SQL keywords', async () => {
+		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
+		const editor = await vscode.window.showTextDocument(doc);
+		assert.ok(editor, 'No active editor');
+		editor.selection = new vscode.Selection(0, 0, 0, 10);
+		const originalText = 'SELECT * FROM table1.sometoken where column1 = 1234324 AND column2 = 23432';
+		await editor.edit(editBuilder => {
+			editBuilder.replace(editor.selection, originalText);
+		});
+		await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
+		const clipboardText = await vscode.env.clipboard.readText();
+		
+		// First 13 characters should be the same
+		assert.strictEqual(clipboardText.substring(0, 13), originalText.substring(0, 13));
+		
+		// The entire thing should be different
+		assert.notStrictEqual(clipboardText, originalText);
+
+		// If the token is in ["SELECT", "FROM", "where", "AND"], it should be the same, else it should be different
+		const tokens = originalText.match(/\b\w+\b/g);
+		tokens.forEach(token => {
+			const sqlReservedWords = ["SELECT", "FROM", "where", "AND"];
+			if (sqlReservedWords.includes(token)) {
+				assert.strictEqual(clipboardText.includes(token), true);
+			} else {
+				assert.strictEqual(clipboardText.includes(token), false);
+			}
+		});
     });
 
-    test('Test unanonymizeAndPaste function 01', async () => {
+	
+    test('Test 02 unanonymizeAndPaste function', async () => {
 		// An editor is created and writes something in a first script
 		let doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		let editor = await vscode.window.showTextDocument(doc);
 		assert.ok(editor, 'No active editor');
-		const originalText = 'Wewilltry amuchlonger pieceoftext tocheck ifthe unanonymize functionworksproperly';
+		const originalText = 'Wewilltry.amuchlonger pieceoftext tocheck ifthe unanonymize functionworksproperly';
 		await editor.edit(editBuilder => {
 			editBuilder.insert(new vscode.Position(0, 0), originalText);
 		});
@@ -92,63 +125,6 @@ suite('Original Test Suite', () => {
 		printDebugInfo("finalText", finalText);
 		printDebugInfo("originalText.substring(0, halfLength)", originalText.substring(0, halfLength));
 		assert.strictEqual(finalText, originalText.substring(0, halfLength));
-
-
-		// // Assert
-		// const selection = editor.selection;
-		// const pastedText = editor.document.getText(selection);
-		// console.log("\n\!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		// console.log("This is the pasted test: \n", pastedText);
-		// console.log("This is the original text: \n", originalText);
-		// console.log("\n\#######################################");
-		// assert.strictEqual(pastedText, originalText);
-    });
-
-});
-
-
-
-suite('Extension Test Suite', () => {
-    vscode.window.showInformationMessage('Start all tests.');
-
-	test('Test anonymizeAndCopy function 02', async () => {
-		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
-		const editor = await vscode.window.showTextDocument(doc);
-		assert.ok(editor, 'No active editor');
-		editor.selection = new vscode.Selection(0, 0, 0, 10);
-		const originalText = 'table2.somename allthe wordshere shouldbe.sanitized';
-		await editor.edit(editBuilder => {
-			editBuilder.replace(editor.selection, originalText);
-		});
-		await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
-		const clipboardText = await vscode.env.clipboard.readText();
-		assert.notStrictEqual(clipboardText, originalText);
-		// Tokenize the original text and make sure that no token is the same as before
-		const tokens = originalText.match(/\b\w+\b/g);
-		tokens.forEach(token => {
-			// If the assert below will fail, print the token and clipboardText to console
-			// console.log("\n\!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			// console.log(token);
-			// console.log(clipboardText);
-			// console.log("\n\#######################################");
-			assert.strictEqual(clipboardText.includes(token), false);
-		});
-    });
-	
-    test('Test anonymizeAndCopy function 03', async () => {
-		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
-		const editor = await vscode.window.showTextDocument(doc);
-		assert.ok(editor, 'No active editor');
-		editor.selection = new vscode.Selection(0, 0, 0, 10);
-		const originalText = 'SELECT * FROM table1';
-		await editor.edit(editBuilder => {
-			editBuilder.replace(editor.selection, originalText);
-		});
-		await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
-		const clipboardText = await vscode.env.clipboard.readText();
-		assert.strictEqual(clipboardText.substring(0, 13), originalText.substring(0, 13));
-		assert.notStrictEqual(clipboardText, originalText);
-
     });
 
 	// // TODO!!
