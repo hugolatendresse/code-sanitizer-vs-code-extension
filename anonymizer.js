@@ -1,4 +1,3 @@
-const fs = require('fs');
 const sqlReservedWordsUpper = require('./reserved_words');
 const shortWords = require('./short_word_list');
 
