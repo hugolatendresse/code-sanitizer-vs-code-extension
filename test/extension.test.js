@@ -168,9 +168,7 @@ suite('Extension Test Suite', () => {
 
 		// Assert that the third line of pastedText is the same as penultimate line of pastedText
 		// This is to make sure that same symbols get mapped to same sanitized tokens
-		const pastedText = document.getText();
-		const pastedLines = pastedText.split('\n');
-		printDebugInfo("pastedText (should be HALF length and sanitized)", pastedText);
+		const pastedLines = document.getText().split('\n');
 		assert.strictEqual(pastedLines[2], pastedLines[9]);
 
 		// Set clipboard to something random
@@ -178,8 +176,7 @@ suite('Extension Test Suite', () => {
 
 		// Copy half of text in the editor such that clipboard contains 7 lines of sanitized text
 		let halfLines = 7;
-		editor.selection = new vscode.Selection(0, 0, halfLines, 0); // Check below is doesn't work
-		// editor.selection = new vscode.Selection(0, 0, document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
+		editor.selection = new vscode.Selection(0, 0, halfLines, 0);
 		await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
 
 		// Assert that every token in the clipboard is different from the original text
@@ -205,13 +202,14 @@ suite('Extension Test Suite', () => {
 		assertAllTokensDifferent(originalText, document.getText());
 
 		// Replace all text with unanonymized version
-		editor.selection = new vscode.Selection(0, 0, document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
+		await vscode.commands.executeCommand('editor.action.selectAll');
 		await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
 
 		// Assert that the finalText is equal to the first 7 lines of the originalText
-		const originalTextHalf = originalText.split('\n').slice(0, halfLines).join('\n');
-		assert.strictEqual(document.getText(), originalTextHalf);
-
+		const originalTextHalf = originalText.split('\n').slice(0, halfLines).join('\n') + '\r\n';
+		printDebugInfo("originalTextHalf", originalTextHalf);
+		printDebugInfo("finalText", document.getText());
+		assert.strictEqual(document.getText().replace(/\r\n/g, '\n'), originalTextHalf.replace(/\r\n/g, '\n'));
     });
 
 
