@@ -1,4 +1,3 @@
-const fs = require('fs');
 const sqlReservedWordsUpper = require('./reserved_words');
 const shortWords = require('./short_word_list');
 
@@ -35,16 +34,14 @@ class Anonymizer {
     }
 
     anonymize(query) {
-        this.mapping = {};
         const tokens = query.match(/\b\w+\b/g);
         tokens.forEach(token => {
             const upperToken = token.toUpperCase();
-            if (!sqlReservedWordsUpper.includes(upperToken)) {
-                if (!this.mapping.hasOwnProperty(token)) {
+            // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
+            if (!sqlReservedWordsUpper.includes(upperToken) && !this.mapping.hasOwnProperty(token)) {
                     this.mapping[token] = this.generateRandomString();
                 }
-                query = this.replaceInString(token, this.mapping[token], query);
-            }
+            query = this.replaceInString(token, this.mapping[token], query);
         });
         return query;
     }
