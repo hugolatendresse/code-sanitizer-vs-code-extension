@@ -1,11 +1,25 @@
 # Change Log
 
-## 0.1 Alpha testing
 
-- 0.1.0 Initial alpha release - supports SQL only
+### 0.1.9
+- Removed dirty words from dictionary
 
-- 0.1.1 to 0.1.6 use short dictionary words only, use common words only, and README updates
+### 0.1.8
+- Bug fix
 
-- 0.1.7 mapping now persists in a given session
+### 0.1.7
+- Mapping now persists in a given session
 
-- 0.1.8 bug fix
+### 0.1.6
+- Use common words only
+
+### 0.1.5
+- Use short dictionary words only
+
+### 0.1.3
+- README updates
+- Added icon
+
+### 0.1.0
+- Initial alpha release - supports SQL only
+
