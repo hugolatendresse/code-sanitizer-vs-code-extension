@@ -19,13 +19,13 @@
       {
         "command": "code-anonymizer.anonymizeAndCopy",
         "key": "ctrl+shift+alt+C",
-        "mac": "ctrl+shift+alt+C",
+        "mac": "cmd+opt+shift+C",
         "when": "editorTextFocus"
       },
       {
         "command": "code-anonymizer.unanonymizeAndPaste",
         "key": "ctrl+shift+alt+V",
-        "mac": "ctrl+shift+alt+V",
+        "mac": "cmd+opt+shift+V",
         "when": "editorTextFocus"
       }
     ],
