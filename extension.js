@@ -34,7 +34,7 @@ function activate(context) {
             let modifiedText = anonymizer.unanonymize(clipboardText);
     
             editor.edit(editBuilder => {
-                editBuilder.replace(editor.selection.start, modifiedText);
+                editBuilder.replace(editor.selection, modifiedText);
             });
         }
     });
