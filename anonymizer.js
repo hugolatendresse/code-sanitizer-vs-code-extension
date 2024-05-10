@@ -1,13 +1,13 @@
 const fs = require('fs');
 const sqlReservedWordsUpper = require('./reserved_words');
-const wordList = require('./word_list');
+const shortWords = require('./short_word_list');
 
 class Anonymizer {
     constructor(tokenMode = 'dictionary') {
         this.mapping = {}; // Dictionary from original tokens to sanitized tokens
         this.tokenMode = tokenMode; // 'random' for random strings, 'dictionary' for dictionary words
         if (tokenMode === 'dictionary') {
-            this.wordList = wordList;
+            this.wordList = shortWords;
             // TODO the above is not very elegant, would be better to read from json file
             // let rawData = fs.readFileSync('word_list.json', 'utf8');
             // this.wordList = JSON.parse(rawData);
