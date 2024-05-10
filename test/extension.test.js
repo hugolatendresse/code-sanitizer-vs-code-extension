@@ -97,6 +97,9 @@ suite('Extension Test Suite', () => {
 		// Assert that every token in selection is different from the original text
 		assertAllTokensDifferent(originalText, document.getText());
 
+		// Set clipboard to something random (to make sure we're grabbing sanitized text)
+		await vscode.env.clipboard.writeText("random text");
+
 		// Copy all text in the editor such that clipboard contains the sanitized text
 		editor.selection = new vscode.Selection(0, 0, document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
 		await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
@@ -127,10 +130,10 @@ suite('Extension Test Suite', () => {
 		assert.strictEqual(document.getText(), originalText);
     });
 
-    test('Test 04 unanonymizeAndPaste all sanitized but only half', async () => {
-		// An editor is created and writes something in a first script
+    test('Test 04 unanonymizeAndPaste half, no SQL', async () => {
 		let doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		let editor = await vscode.window.showTextDocument(doc);
+		let document = editor.document;
 		assert.ok(editor, 'No active editor');
 		const originalText = `Wewilltry.amuchlonger pieceoftext tocheck ifthe unanonymize functionworksproperly
 		thisisjust averylong stringwithlotsofwords andpunctuationmarks! moreoverthere aresomenumbers1234
@@ -146,69 +149,71 @@ suite('Extension Test Suite', () => {
 		await editor.edit(editBuilder => {
 			editBuilder.insert(new vscode.Position(0, 0), originalText);
 		});
-		let lineCount = editor.document.lineCount;
-		editor.selection = new vscode.Selection(0, 0, lineCount - 1, editor.document.lineAt(lineCount - 1).text.length);
-		// editor.selection = new vscode.Selection(0, 0, 0, originalText.length);
 		printDebugInfo("originalText (should be full length and unsanitized", originalText);
 
 		// Copy and sanitize
+		let lineCount = editor.document.lineCount;
+		editor.selection = new vscode.Selection(0, 0, lineCount - 1, editor.document.lineAt(lineCount - 1).text.length);
 		await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
-
-		// Paste the result in some doc
-		doc = await vscode.workspace.openTextDocument({ content: ' ' });
-		editor = await vscode.window.showTextDocument(doc);
-		await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
-		
-		// Assert that the third line of pastedText is the same as last line of pastedText
-		const pastedText = editor.document.getText();
-		printDebugInfo("pastedText (should be full length and sanitized)", pastedText); // this is empty
-		const pastedLines = pastedText.split('\n');
-		assert.strictEqual(pastedLines[2], pastedLines[9]);
-		
-		// Tokenize the pastedText, tokenize the originalText and assert that the two lists of token have no element in common
-		const originalTokens = originalText.match(/\b\w+\b/g);
-		const pastedTokens = pastedText.match(/\b\w+\b/g);
-		originalTokens.forEach(token => {
-			assert.strictEqual(pastedTokens.includes(token), false);
-		});
-		
-		// Copy only part of the sanitized text
-		let halfLines = 7;
-
-		// // Adjust the selection such that it includes half the lines
-		// editor.selection = new vscode.Selection(0, 0, halfLines, 0);
-		// const finalText = editor.document.getText(editor.selection);
-		// // Substring the originalText to include only the first 7 lines
-		// const originalTextHalf = originalText.split('\n').slice(0, halfLines).join('\n');
-		// assert.strictEqual(finalText, originalTextHalf);
-
-		// Adjust the selection such that it includes half the lines
-		editor.selection = new vscode.Selection(0, 0, halfLines, 0);
-
-		// Copy the selected text
-		await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
 
 		// Clear the editor
 		await vscode.commands.executeCommand('editor.action.selectAll');
 		await vscode.commands.executeCommand('editor.action.deleteLines');
 
-		// Print the content of the clipboard
-		const clipboardText = await vscode.env.clipboard.readText();
-		printDebugInfo("clipboardText (should be half length and sanitized)", clipboardText);
-		// Paste the copied text into the editor, replacing all text that's in there
+		// Paste in editor so that editor contains sanitized text
+		await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+
+		// Assert that every token in selection is different from the original text
+		assertAllTokensDifferent(originalText, document.getText());
+
+		// Assert that the third line of pastedText is the same as penultimate line of pastedText
+		// This is to make sure that same symbols get mapped to same sanitized tokens
+		const pastedText = document.getText();
+		const pastedLines = pastedText.split('\n');
+		printDebugInfo("pastedText (should be HALF length and sanitized)", pastedText);
+		assert.strictEqual(pastedLines[2], pastedLines[9]);
+
+		// Set clipboard to something random
+		await vscode.env.clipboard.writeText("random text");
+
+		// Copy half of text in the editor such that clipboard contains 7 lines of sanitized text
+		let halfLines = 7;
+		editor.selection = new vscode.Selection(0, 0, halfLines, 0); // Check below is doesn't work
+		// editor.selection = new vscode.Selection(0, 0, document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
+		await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
+
+		// Assert that every token in the clipboard is different from the original text
+		assertAllTokensDifferent(originalText, await vscode.env.clipboard.readText());  // Won't be true with SQL
+
+		// Replace all text in the editor with "hello world"
+		// const text_before_helloworld = document.getText();
+		// printDebugInfo("text_before_priting_hello_world", text_before_helloworld);
+		await vscode.commands.executeCommand('editor.action.selectAll');
+		await vscode.commands.executeCommand('editor.action.deleteLines');		
+		await editor.edit(editBuilder => {
+			// Create a range that covers the entire document
+			let range = new vscode.Range(
+				document.positionAt(0),
+				document.positionAt(document.getText().length)
+			);
+
+			// Replace the range with "hello world"
+			editBuilder.replace(range, "hello world");
+		});
+
+		// Replace all text in the editor with the unsanitized text
+		assertAllTokensDifferent(originalText, document.getText());
+
+		// Replace all text with unanonymized version
+		editor.selection = new vscode.Selection(0, 0, document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
 		await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
 
-		// Get the resulting text
-		const finalText = editor.document.getText();
-
-		// Substring the originalText to include only the first 7 lines
+		// Assert that the finalText is equal to the first 7 lines of the originalText
 		const originalTextHalf = originalText.split('\n').slice(0, halfLines).join('\n');
+		assert.strictEqual(document.getText(), originalTextHalf);
 
-		// Assert that the finalText is equal to the originalTextHalf
-		printDebugInfo("finalText (should be half length and unsanitized)", finalText);
-		printDebugInfo("originalTextHalf (should be half length and unsanitized)", originalTextHalf);
-		assert.strictEqual(finalText, originalTextHalf);
     });
+
 
 	// TODO    test('Test 05 unanonymizeAndPaste with SQL keywords', async () => {
 
