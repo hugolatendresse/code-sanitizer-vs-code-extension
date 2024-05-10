@@ -10,40 +10,40 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:code-anonymizer.anonymizeAndCopy"
+    "onCommand:code-sanitizer.anonymizeAndCopy"
   ],
   "main": "./extension.js",
   
   "contributes": {
     "keybindings": [
       {
-        "command": "code-anonymizer.anonymizeAndCopy",
+        "command": "code-sanitizer.anonymizeAndCopy",
         "key": "ctrl+shift+alt+C",
         "mac": "cmd+opt+shift+C",
         "when": "editorTextFocus"
       },
       {
-        "command": "code-anonymizer.unanonymizeAndPaste",
+        "command": "code-sanitizer.unanonymizeAndPaste",
         "key": "ctrl+shift+alt+V",
         "mac": "cmd+opt+shift+V",
         "when": "editorTextFocus"
       }
     ],
     "commands": [{
-      "command": "code-anonymizer.anonymizeAndCopy",
+      "command": "code-sanitizer.anonymizeAndCopy",
       "title": "Anonymize and Copy Code"
     }, {
-      "command": "code-anonymizer.unanonymizeAndPaste",
+      "command": "code-sanitizer.unanonymizeAndPaste",
       "title": "Unanonymize and Paste Code"
     }],
     "menus": {
       "editor/context": [
         {
-          "command": "code-anonymizer.anonymizeAndCopy",
+          "command": "code-sanitizer.anonymizeAndCopy",
           "when": "editorTextFocus"
       },
       {
-          "command": "code-anonymizer.unanonymizeAndPaste",
+          "command": "code-sanitizer.unanonymizeAndPaste",
           "when": "editorTextFocus"
       }
       ]

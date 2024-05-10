@@ -9,9 +9,9 @@ function activate(context) {
 
     let a = new Anonymizer();
 
-	console.log('Extension "code-anonymizer" is now active!');
+	console.log('Extension "code-sanitizer" is now active!');
 
-    let disposable = vscode.commands.registerCommand('code-anonymizer.anonymizeAndCopy', function () {
+    let disposable = vscode.commands.registerCommand('code-sanitizer.anonymizeAndCopy', function () {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
             const selection = editor.selection;
@@ -31,7 +31,7 @@ function activate(context) {
 
     context.subscriptions.push(disposable);
 
-    let disposableUnanonymizeAndPaste = vscode.commands.registerCommand('code-anonymizer.unanonymizeAndPaste', async function () {
+    let disposableUnanonymizeAndPaste = vscode.commands.registerCommand('code-sanitizer.unanonymizeAndPaste', async function () {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
             // const Anonymizer = require('./anonymizer');
