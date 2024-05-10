@@ -2,7 +2,7 @@
   "name": "code-sanitizer",
   "displayName": "Code Sanitizer",
   "description": "Copy-paste a sanitized version of your code to and from VS Code seamlessly. Perfect for using AI services without leaking sensitive information.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "publisher": "hugolatendresse",
   "icon": "./images/Resize image project.png",
   "repository": {
