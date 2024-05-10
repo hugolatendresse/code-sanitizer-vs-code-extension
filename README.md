@@ -12,7 +12,10 @@ This allows to paste code into tools like chatGPT, or even public forums, withou
 
 
 ### Step 1
-Select the code you want to sanitize and copy using **ctrl+shift+alt+C** (**cmd+shift+option+C** on mac)
+Select the code you want to sanitize and copy using **ctrl+shift+alt+C** (**cmd+shift+option+C** on mac).
+You can also right-click and select "Anonymize and Copy Code"
+
+The code in your clipboard is a sanitized version of what you see in VS Code.
 
 ![VS Code Screenshot Before](./images/step_1.png)
 
@@ -29,6 +32,7 @@ If the chat tool gives you something you want to bring back to VS code, copy it 
 
 ### Step 4
 Use **ctrl+shift+alt+V** (**cmd+shift+option+V** on mac) to paste back in VS code.
+You can also right-click and select "Unanonymize and Paste Code"
 
 Instead of the sanitized code, you will get the original names! 
 Even if the code has changed (new lines of code, etc.)

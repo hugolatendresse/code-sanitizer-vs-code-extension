@@ -1,0 +1,5 @@
+To publish: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#publishing-extensions
+vsce package
+vsce publish
+
+Make sure all images are on dev on the github
