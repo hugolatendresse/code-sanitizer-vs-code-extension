@@ -4,7 +4,7 @@
   "description": "Copy-paste an anonymized version of your code to and from VS Code seamlessly",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.88.0"
+    "vscode": "^1.68.0"
   },
   "categories": [
     "Other"
@@ -55,7 +55,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.89.0",
+    "@types/vscode": "^1.68.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "eslint": "^8.57.0",
