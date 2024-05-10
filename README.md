@@ -2,7 +2,7 @@
 
 [![GitHub](https://img.shields.io/badge/-GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/hugolatendresse/code-sanitizer-vs-code-extension)
 
-This extension allows to copy-paste code to and from VS code without sharing anything else than code keywords.
+Copy-paste code to and from VS code without sharing anything else than code keywords.
 
 For example, when using SQL, words like SELECT and FROM will stay the same, but all table and field names will be replaced by a random dictionary word.
 
