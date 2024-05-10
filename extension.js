@@ -30,13 +30,11 @@ function activate(context) {
     let disposableUnanonymizeAndPaste = vscode.commands.registerCommand('code-sanitizer.unanonymizeAndPaste', async function () {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
-            // const Anonymizer = require('./anonymizer');
-           
             let clipboardText = await vscode.env.clipboard.readText();
             let modifiedText = anonymizer.unanonymize(clipboardText);
     
             editor.edit(editBuilder => {
-                editBuilder.insert(editor.selection.start, modifiedText);
+                editBuilder.replace(editor.selection, modifiedText);
             });
         }
     });
