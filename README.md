@@ -13,11 +13,11 @@ This allows pasting code into tools like ChatGPT or public forums, without shari
 
 ### Step 1
 Select the code you want to sanitize and copy using **ctrl+shift+alt+C** (**cmd+shift+option+C** on Mac).
-You can also right-click and select "Anonymize and Copy Code".
-
-The code in your clipboard will be a sanitized version of what you see in VS Code.
+You can also right-click and select "**Anonymize and Copy Code**".
 
 ![VS Code Screenshot Before](./images/step_1.png)
+
+The code in your clipboard will be a sanitized version of what you see in VS Code.
 
 ### Step 2
 Paste the code as you would normally (**ctrl+V** or **cmd+V**) in your favorite AI chat tool. 
@@ -32,7 +32,7 @@ If the chat tool gives you something you want to bring back to VS code, copy it 
 
 ### Step 4
 Use **ctrl+shift+alt+V** (**cmd+shift+option+V** on Mac) to paste back in VS Code.
-You can also right-click and select "Unanonymize and Paste Code".
+You can also right-click and select "**Unanonymize and Paste Code**".
 
 Instead of the sanitized code, you will get the original names! 
 Even if the code has changed (new lines of code, etc.)
