@@ -26,7 +26,7 @@ const extension = require('../extension');
 suite('Original Test Suite', () => {
     vscode.window.showInformationMessage('Start all tests.');
 
-    test('Test anonymizeAndCopy function', async () => {
+    test('Test anonymizeAndCopy function 00', async () => {
 		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		const editor = await vscode.window.showTextDocument(doc);
 		assert.ok(editor, 'No active editor');
@@ -43,7 +43,7 @@ suite('Original Test Suite', () => {
 		assert.notStrictEqual(clipboardText, 'Test String');
     });
 
-    test('Test unanonymizeAndPaste function', async () => {
+    test('Test unanonymizeAndPaste function 01', async () => {
 		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		const editor = await vscode.window.showTextDocument(doc);
 		assert.ok(editor, 'No active editor');
@@ -65,12 +65,12 @@ suite('Original Test Suite', () => {
 suite('Extension Test Suite', () => {
     vscode.window.showInformationMessage('Start all tests.');
 
-	test('Test anonymizeAndCopy function 00', async () => {
+	test('Test anonymizeAndCopy function 02', async () => {
 		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		const editor = await vscode.window.showTextDocument(doc);
 		assert.ok(editor, 'No active editor');
 		editor.selection = new vscode.Selection(0, 0, 0, 10);
-		const originalText = 'table2.some stuff all changed';
+		const originalText = 'table2.somename allthe wordshere shouldbe.sanitized';
 		await editor.edit(editBuilder => {
 			editBuilder.replace(editor.selection, originalText);
 		});
@@ -80,11 +80,16 @@ suite('Extension Test Suite', () => {
 		// Tokenize the original text and make sure that no token is the same as before
 		const tokens = originalText.match(/\b\w+\b/g);
 		tokens.forEach(token => {
+			// If the assert below will fail, print the token and clipboardText to console
+			console.log("\n\n\!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n");
+			console.log(token);
+			console.log(clipboardText);
+			console.log("\n\n\#######################################\n\n");
 			assert.strictEqual(clipboardText.includes(token), false);
 		});
     });
 	
-    test('Test anonymizeAndCopy function 01', async () => {
+    test('Test anonymizeAndCopy function 03', async () => {
 		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		const editor = await vscode.window.showTextDocument(doc);
 		assert.ok(editor, 'No active editor');
@@ -100,7 +105,7 @@ suite('Extension Test Suite', () => {
 
     });
 
-    test('Test unanonymizeAndPaste function', async () => {
+    test('Test unanonymizeAndPaste function 04', async () => {
 		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		const editor = await vscode.window.showTextDocument(doc);
 		assert.ok(editor, 'No active editor');
