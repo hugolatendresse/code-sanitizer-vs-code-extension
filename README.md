@@ -10,26 +10,27 @@ This allows to paste code into tools like chatGPT, or even public forums, withou
 
 /* Only supports SQL for now */
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
 
 ### Step 1
-Copy the code you want to sanitize using ctrl+shift+alt+C (cmd+shift+option+C on mac)
+Select the code you want to sanitize and copy using **ctrl+shift+alt+C** (**cmd+shift+option+C** on mac)
+
 ![VS Code Screenshot Before](./images/step_1.png)
 
 ### Step 2
-Paste the code normally (ctrl+V or cmd+V) in your favorite chat tool. 
-Instead of the original code, it will be sanitized with random words!
+Paste the code normally (**ctrl+V** or **cmd+V**) in your favorite AI chat tool. 
+Instead of the original code, the pasted version is sanitized with random words!
+
 ![Prompting LLM](./images/step_2.png)
 
 ### Step 3
-If the chat tool gives you something you want to bring back to VS code, copy it (ctrl+C or cmd+C) 
+If the chat tool gives you something you want to bring back to VS code, copy it normally (**ctrl+C** or **cmd+C**) 
+
 ![Pasting from LLM](./images/step_3.png)
 
 ### Step 4
-Use ctrl+shift+alt+V (cmd+shift+option+V on mac) to paste it back in VS code.
-Instead of the sanitized code, you will get the original names! Even if the code has changed (new lines of code, etc.)
+Use **ctrl+shift+alt+V** (**cmd+shift+option+V** on mac) to paste back in VS code.
+
+Instead of the sanitized code, you will get the original names! 
+Even if the code has changed (new lines of code, etc.)
+
 ![VS Code Screenshot After](./images/step_4.png)
