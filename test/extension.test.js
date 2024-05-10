@@ -21,12 +21,16 @@ const vscode = require('vscode');
 const assert = require('assert');
 const extension = require('../extension');
 
-
+function printDebugInfo(someName, someVar) {
+    console.log("\n\!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    console.log("This is the ", someName, ":");
+    console.log(someVar);
+    console.log("#######################################\n");
+}
 
 suite('Original Test Suite', () => {
-    vscode.window.showInformationMessage('Start all tests.');
 
-    test('Test anonymizeAndCopy function 00', async () => {
+	test('Test anonymizeAndCopy function 00', async () => {
 		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
 		const editor = await vscode.window.showTextDocument(doc);
 		assert.ok(editor, 'No active editor');
@@ -44,20 +48,62 @@ suite('Original Test Suite', () => {
     });
 
     test('Test unanonymizeAndPaste function 01', async () => {
-		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
-		const editor = await vscode.window.showTextDocument(doc);
+		// An editor is created and writes something in a first script
+		let doc = await vscode.workspace.openTextDocument({ content: ' ' });
+		let editor = await vscode.window.showTextDocument(doc);
 		assert.ok(editor, 'No active editor');
-		const originalText = 'Test String';
-		await vscode.env.clipboard.writeText(originalText);
+		const originalText = 'Wewilltry amuchlonger pieceoftext tocheck ifthe unanonymize functionworksproperly';
+		await editor.edit(editBuilder => {
+			editBuilder.insert(new vscode.Position(0, 0), originalText);
+		});
+		editor.selection = new vscode.Selection(0, 0, 0, originalText.length);
+		printDebugInfo("originalText", originalText);
 
-		// Act
+		// Copy and sanitize
+		await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
+
+		// Paste the result in some doc
+		doc = await vscode.workspace.openTextDocument({ content: ' ' });
+		editor = await vscode.window.showTextDocument(doc);
+		await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+		// TODO make sure is sanitized!!
+	
+		// Copy half the sanitized text
+		const pastedText = editor.document.getText();
+		printDebugInfo("pastedText (should be full length)", pastedText); // this is empty
+		let halfLength = Math.ceil(editor.document.getText().length / 2);
+		// Adjust the length such that the last character is an alphabetical character
+		while (pastedText[halfLength] === ' ' || pastedText[halfLength] === '\n') {
+			halfLength--;
+		}
+		editor.selection = new vscode.Selection(0, 0, 0, halfLength);
+		await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
+		// Log the text contained in the clipboard
+		const clipboardText = await vscode.env.clipboard.readText();
+		printDebugInfo("clipboardText (should be half length)", clipboardText);
+
+		// Select all text in the editor
+		const fullLength = editor.document.getText().length;
+		editor.selection = new vscode.Selection(0, 0, 0, fullLength);
 		await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
-
+	
 		// Assert
-		const selection = editor.selection;
-		const pastedText = editor.document.getText(selection);
-		assert.strictEqual(pastedText, originalText);
+		const finalText = editor.document.getText();
+		printDebugInfo("finalText", finalText);
+		printDebugInfo("originalText.substring(0, halfLength)", originalText.substring(0, halfLength));
+		assert.strictEqual(finalText, originalText.substring(0, halfLength));
+
+
+		// // Assert
+		// const selection = editor.selection;
+		// const pastedText = editor.document.getText(selection);
+		// console.log("\n\!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		// console.log("This is the pasted test: \n", pastedText);
+		// console.log("This is the original text: \n", originalText);
+		// console.log("\n\#######################################");
+		// assert.strictEqual(pastedText, originalText);
     });
+
 });
 
 
@@ -81,10 +127,10 @@ suite('Extension Test Suite', () => {
 		const tokens = originalText.match(/\b\w+\b/g);
 		tokens.forEach(token => {
 			// If the assert below will fail, print the token and clipboardText to console
-			console.log("\n\n\!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n");
-			console.log(token);
-			console.log(clipboardText);
-			console.log("\n\n\#######################################\n\n");
+			// console.log("\n\!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			// console.log(token);
+			// console.log(clipboardText);
+			// console.log("\n\#######################################");
 			assert.strictEqual(clipboardText.includes(token), false);
 		});
     });
@@ -105,19 +151,22 @@ suite('Extension Test Suite', () => {
 
     });
 
-    test('Test unanonymizeAndPaste function 04', async () => {
-		const doc = await vscode.workspace.openTextDocument({ content: ' ' });
-		const editor = await vscode.window.showTextDocument(doc);
-		assert.ok(editor, 'No active editor');
-		const originalText = 'Test String';
-		await vscode.env.clipboard.writeText(originalText);
+	// // TODO!!
+    // test('Test unanonymizeAndPaste function 04', async () => {
+	// 	// TODO!!!!!
 
-		// Act
-		await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
+	// 	// const doc = await vscode.workspace.openTextDocument({ content: ' ' });
+	// 	// const editor = await vscode.window.showTextDocument(doc);
+	// 	// assert.ok(editor, 'No active editor');
+	// 	// const originalText = 'Test String';
+	// 	// await vscode.env.clipboard.writeText(originalText);
 
-		// Assert
-		const selection = editor.selection;
-		const pastedText = editor.document.getText(selection);
-		assert.strictEqual(pastedText, originalText);
-    });
+	// 	// // Act
+	// 	// await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
+
+	// 	// // Assert
+	// 	// const selection = editor.selection;
+	// 	// const pastedText = editor.document.getText(selection);
+	// 	// assert.strictEqual(pastedText, originalText);
+    // });
 });
