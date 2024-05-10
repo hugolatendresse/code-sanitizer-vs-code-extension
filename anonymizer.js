@@ -47,7 +47,7 @@ class Anonymizer {
         });
         return query;
     }
-    
+
     unanonymize(query) {
         Object.entries(this.mapping).forEach(([originalToken, sanitizedToken]) => {
             query = this.replaceInString(sanitizedToken, originalToken, query);
