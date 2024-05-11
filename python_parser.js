@@ -24,49 +24,6 @@ function getImports(script) {
     return imports;
 }
 
-function parsePythonScript(script, libraries) {
-    const results = [];
-    // Create a regex pattern to match the library usage
-    const libPattern = libraries.map(lib => `${lib}\\s*\\.\\s*([a-zA-Z_][a-zA-Z0-9_]*)`).join('|');
-    const pattern = new RegExp(libPattern, 'g');
-
-    // This will hold all matches found
-    let match;
-    while ((match = pattern.exec(script)) !== null) {
-        // Extract the function or module name after the library name
-        const functionName = match[1] || match[3] || match[5]; // Depending on which library matched
-        if (functionName && !results.includes(functionName)) {
-            results.push(functionName);
-        }
-    }
-
-    return results;
-}
-
-
-
-const pythonScript = `
-import os
-import numpy as np
-from os import path as os_path, system
-import pandas as pd
-from matplotlib import pyplot as plt
-from copy import deepcopy
-
-some_var = np.sum(pandas.read_csv(os.path.join('data','some folder',var1)['some column'], axis=0))
-other_var = some_var + pd.functoinclude1.functounclude2.otherfunctoinclude3.shouldalsobethere4.stillincluded5('hello world').stillincluded6
-`;
-
-// TODO: need to catch if import * is used and say that's not supported right now
-
-// TODO see exactly what works and what doesn't below and prune the two functions above
-
-const extractedImports = getImports(pythonScript);
-console.log("pythonScript2:\n",pythonScript);
-console.log("extracted imports\n",extractedImports);
-
-console.log("\n\n\n\n\n\n")
-
 function processImports(importData) {
     const results = new Set();
 
@@ -97,33 +54,59 @@ function processImports(importData) {
     return Array.from(results);
 }
 
-// const imports = [
-//     { module: 'os', importedItems: [], libraryNickName: '' },
-//     { module: 'numpy', importedItems: [], libraryNickName: 'np' },
-//     {
-//       module: 'os',
-//       importedItems: ['path as os_path', 'system'],
-//       libraryNickName: ''
-//     },
-//     { module: 'pandas', importedItems: [], libraryNickName: 'pd' },
-//     {
-//       module: 'matplotlib',
-//       importedItems: ['pyplot as plt'],
-//       libraryNickName: ''
-//     },
-//     {
-//       module: 'copy',
-//       importedItems: ['deepcopy'],
-//       libraryNickName: ''
-//     }
-// ];
+function parsePythonScript(script, libraries) {
+    const results = [];
+    // Create a regex pattern to match the library usage
+    const libPattern = libraries.map(lib => `${lib}\\s*\\.\\s*([a-zA-Z_][a-zA-Z0-9_]*)`).join('|');
+    const pattern = new RegExp(libPattern, 'g');
 
-const details = processImports(extractedImports);
-console.log(details);
+    // This will hold all matches found
+    let match;
+    while ((match = pattern.exec(script)) !== null) {
+        // Extract the function or module name after the library name
+        const functionName = match[1] || match[3] || match[5]; // Depending on which library matched
+        if (functionName && !results.includes(functionName)) {
+            results.push(functionName);
+        }
+    }
 
-console.log("\n\n\n\n\n\n")
+    return results;
+}
+
+const pythonScript = `
+import os
+import numpy as np
+from os import path as os_path, system
+import pandas as pd
+from matplotlib import pyplot as plt
+from copy import deepcopy
+
+some_var = np.sum(pandas.read_csv(os.path.join('data','some folder',var1)['some column'], axis=0))
+other_var = some_var + pd.functoinclude1.functounclude2.otherfunctoinclude3.shouldalsobethere4.stillincluded5('hello world').stillincluded6
+`;
+
+// TODO: need to catch if import * is used and say that's not supported right now
+
+// TODO see exactly what works and what doesn't below and prune the two functions above
+
+const extractedImports = getImports(pythonScript);
+console.log("pythonScript2:\n",pythonScript);
+console.log("extracted imports\n",extractedImports);
+
+console.log("\n\n\n")
+
+const expectedLibraries = ["os", "np", "os_path", "system", "pd", "plt", "deepcopy"];
+const libraries = processImports(extractedImports);
+// Assertion that libraries equal expectedLibraries
+// console.log("libraries\n",libraries);
+// console.log("expectedLibrarries\n",expectedLibraries);
+const assert = require('assert');
+assert.deepStrictEqual(libraries, expectedLibraries, 'libraries does not equal expectedLibraries');
 
 
-const libraries = ["os", "np", "os_path", "system", "pd", "plt", "deepcopy"];
+console.log("\n\n\n\n")
+
+
 const usedNames = parsePythonScript(pythonScript, libraries);
+// Ass
 console.log(usedNames);
