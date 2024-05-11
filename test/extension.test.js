@@ -1,9 +1,8 @@
 // to run: npm test
 
-
 const vscode = require('vscode');
 const assert = require('assert');
-const extension = require('../extension');
+const parsePythonScript = require('../python_parser');
 
 function printDebugInfo(someName, someVar) {
     console.log("\n\!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -37,6 +36,20 @@ function assertSomeTokensSame(text1, text2, sameExpectedTokens) {
 	// Check that the common tokens are as expected, ignoring the order
 	assert.deepStrictEqual(Array.from(new Set(sameTokens)).sort(), Array.from(new Set(sameExpectedTokens)).sort());
 }
+
+function assertSetsEqual(set1, set2, message = '') {
+    try {
+        assert.deepStrictEqual(Array.from(new Set(set1)).sort(), Array.from(new Set(set2)).sort());
+    } catch (error) {
+        console.log(`Set 1: ${set1}`);
+        console.log(`Set 2: ${set2}`);
+        const difference1 = set1.filter(x => !set2.includes(x));
+        const difference2 = set2.filter(x => !set1.includes(x));
+        console.log(`Difference: ${difference1.concat(difference2)}`);
+        throw new Error(message);
+    }
+}
+
 
 suite('Extension Test Suite', () => {
 
@@ -313,4 +326,45 @@ suite('Extension Test Suite', () => {
 
 
 
+});
+
+
+suite('Python Parser Test Suite', () => {
+
+	test('Test 00 pythonParser', async () => {
+		const pythonScript = `
+		import os
+		import numpy as np
+		from os import path as os_path, system
+		import pandas as pd
+		from matplotlib import pyplot as plt
+		from copy import deepcopy
+
+		some_var = np.sum(pandas.read_csv(os.path.join('data','some folder',var1)['some column'], axis=0))
+		other_var = some_var + pd.functoinclude1.functounclude2.otherfunctoinclude3.shouldalsobethere4.stillincluded5('hello world').stillincluded6
+		`;
+
+		const expectedFinalanser= ["os", "np", "os_path", "system", "pd", "plt", "deepcopy",
+		"numpy",
+		"path",
+		"pandas",
+		"matplotlib",
+		"pyplot",
+		"copy",
+		"sum",
+		"read_csv",
+		"join",
+		"functoinclude1",
+		"functounclude2",
+		"otherfunctoinclude3",
+		"shouldalsobethere4",
+		"stillincluded5",
+	//	"stillincluded6", // TODO need to be able to catch that too!!
+	//	"axis", // TODO need to be able to catch that too!!
+	];
+
+		const parsePythonScript_out = parsePythonScript(pythonScript, false);
+		assertSetsEqual(parsePythonScript_out, expectedFinalanser, 'final does not equal expectedFinalanser'); // Only Difference: stillincluded6
+    });
+	
 });

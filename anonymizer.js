@@ -26,6 +26,9 @@ class Anonymizer {
             // this.wordList = JSON.parse(rawData);
             this.shuffleArray(this.wordList);
         }
+        this.sqlReservedWordsUpper = sqlReservedWordsUpper;
+        this.pythonReservedWordsUpper = new Set();
+        this.updateReservedWordsUpper();
     }
 
     generateRandomString(length = 8) {
@@ -47,27 +50,20 @@ class Anonymizer {
         }
     }
 
+    updateReservedWordsUpper() {
+        this.reservedWordsUpper =  new Set([...this.sqlReservedWordsUpper, ...this.pythonReservedWordsUpper]);
+    }
+
     anonymize(query) {
         const tokens = query.match(/\b\w+\b/g);
-        
-        // TODO the argument of parsePythonScript shoud NOT be query, but the entire script!
-        // TODO need to decide on a solution to parse entire script. It must read it either when copy is called, or before whenever the session is opened. 
-        // TODO Also need to think what will happen to .mapping. For example, what if new stuff gets discovered as the tool sees more scripts, etc..  
-        let wordsFromPythonScript = parsePythonScript();
-        let upperCasePythonWords = wordsFromPythonScript.map(word => word.toUpperCase());
-        let reservedWords = [...sqlReservedWordsUpper, ...upperCasePythonWords];
-
-        
-
-        // parsePythonScript(query, debug)
-
         tokens.forEach(token => {
             const upperToken = token.toUpperCase();
-            // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
-            if (!sqlReservedWordsUpper.includes(upperToken)) {
+            if (!this.reservedWordsUpper.has(upperToken)) {
+                // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
                 if (!this.mapping.hasOwnProperty(token)) {
                     this.mapping[token] = this.generateRandomString();
                 }
+                // Replace the token with the sanitized token
                 query = this.replaceInString(token, this.mapping[token], query);
             }
         });
@@ -100,6 +96,13 @@ class Anonymizer {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]]; // Swap elements
         }
+    }
+
+    read_entire_python_script(allText) {
+        let wordsFromPythonScript = parsePythonScript(allText);
+        let pythonWordsUpper = wordsFromPythonScript.map(word => word.toUpperCase());
+        this.pythonReservedWordsUpper = new Set([...this.pythonReservedWordsUpper, ...pythonWordsUpper]);
+        this.updateReservedWordsUpper();
     }
 }
 
