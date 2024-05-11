@@ -24,14 +24,16 @@ function getImports(script) {
     return imports;
 }
 
-function processImports(importData) {
+function processImports(importData, debug=false) {
     const results = new Set();
 
+    if (debug) {
+        console.log("importData",importData);
+    }
+
     importData.forEach(entry => {
-        // Add the main module if no specific imports are listed and no nickname is given
-        if (entry.importedItems.length === 0 && !entry.libraryNickName) {
-            results.add(entry.module);
-        }
+        // Add the main module no matter what
+        results.add(entry.module);
 
         // Add the library nickname if it exists
         if (entry.libraryNickName) {
@@ -57,19 +59,20 @@ function processImports(importData) {
 function parsePythonScript(script, libraries) {
     const results = [];
     // Create a regex pattern to match the library usage
-    const libPattern = libraries.map(lib => `${lib}\\s*\\.\\s*([a-zA-Z_][a-zA-Z0-9_]*)`).join('|');
+    const libPattern ='\\b(' + libraries.join('|') + ')\\.([a-zA-Z_][a-zA-Z0-9_]*)';
+    // const libPattern = libraries.map(lib => `${lib}\\s*\\.\\s*([a-zA-Z_][a-zA-Z0-9_]*)`).join('|');
     const pattern = new RegExp(libPattern, 'g');
 
     // This will hold all matches found
     let match;
     while ((match = pattern.exec(script)) !== null) {
         // Extract the function or module name after the library name
-        const functionName = match[1] || match[3] || match[5]; // Depending on which library matched
+        // const functionName = match[1] || match[3] || match[5]; // Depending on which library matched
+        const functionName = match[2] 
         if (functionName && !results.includes(functionName)) {
             results.push(functionName);
         }
     }
-
     return results;
 }
 
@@ -95,56 +98,103 @@ const extractedImports = getImports(pythonScript);
 
 // console.log("\n\n\n")
 
-const expectedLibraries = ["os", "np", "os_path", "system", "pd", "plt", "deepcopy"];
+const expectedLibraries = ["os", "np", "os_path", "system", "pd", "plt", "deepcopy", "numpy", "pandas", "matplotlib", "copy"];
 const libraries = processImports(extractedImports);
 // Assertion that libraries equal expectedLibraries
 // console.log("libraries\n",libraries);
 // console.log("expectedLibrarries\n",expectedLibraries);
 const assert = require('assert');
-assert.deepStrictEqual(libraries, expectedLibraries, 'libraries does not equal expectedLibraries');
-
+// assert.deepStrictEqual(libraries, expectedLibraries, 'libraries does not equal expectedLibraries');
+assertSetsEqual(libraries, expectedLibraries, 'libraries does not equal expectedLibraries')
 
 // console.log("\n\n\n\n")
 
 
-const parsePythonScript_out = parsePythonScript(pythonScript, libraries);
-// console.log("parsePythonScript_out", parsePythonScript_out);
-// console.log("\n");
-
-function parsePythonScriptv3(script, libraries) {
+function parsePythonScriptv4(script, libraries, debug=false) {
     let results = new Set(libraries);
     let previousSize = -1;
 
     while (previousSize !== results.size) {
-        console.log("STARTING LOOP!!!!!!!!!!!!!!!!!!!!!!!!")
-        console.log("RESULTS ARE",Array.from(results));
-        console.log("RESULTS IS",results.size);
+        if (debug) {
+            console.log("STARTING LOOP!!!!!!!!!!!!!!!!!!!!!!!!")
+            console.log("RESULT SIZE IS",results.size);    
+            console.log("SEARCHING FOR LIBRARIES",Array.from(results));
+        }
 
         previousSize = results.size;
 
         // Create a regex pattern to match the library usage
-        console.log("SEARCHING FOR LIBRARIES",Array.from(results));
-        const libPattern = Array.from(results).map(lib => `${lib}\\s*\\.\\s*([a-zA-Z_][a-zA-Z0-9_]*)`).join('|');
+        // const libPattern ='\\b(' + libraries.join('|') + ')\\.([a-zA-Z_][a-zA-Z0-9_]*)';
+        const libPattern = '\\b(' + libraries.join('|') + ')\\.([a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)*)';
+   
         const pattern = new RegExp(libPattern, 'g');
 
         // This will hold all matches found
         let match;
         while ((match = pattern.exec(script)) !== null) {
+
             // Extract the function or module name after the library name
-            console.log("MATCH IS",match);
-            const functionName = match[1] || match[3] || match[5]; // Depending on which library matched
-            if (functionName) {
-                console.log("ADDING",functionName);
-                results.add(functionName);
-                console.log("RESULTS SIZE IS NOW",results.size);
+            if (debug) {
+                console.log("MATCH IS",match);
             }
+            
+            // Split the chain after the first property and add each one to the results
+            const properties = match[2].split('.');
+            properties.forEach(functionName => {
+                if (functionName) {
+                    if (debug) {
+                        console.log("ADDING",functionName);
+                    }
+                    results.add(functionName);
+                    if (debug) {
+                        console.log("RESULTS SIZE IS NOW",results.size);
+                    }
+                }
+            });
         }
     }
-
     return Array.from(results);
 }
 
-
-const parsePythonScriptv3_out = parsePythonScriptv3(pythonScript, libraries);
-console.log("parsePythonScriptv3_out", parsePythonScriptv3_out);
+const parsePythonScriptv4_out = parsePythonScriptv4(pythonScript, libraries);
+console.log("parsePythonScriptv4_out", parsePythonScriptv4_out);
 console.log("\n");
+
+
+const expectedFinalanser= ["os", "np", "os_path", "system", "pd", "plt", "deepcopy",
+"numpy",
+"path",
+"pandas",
+"matplotlib",
+"pyplot",
+"copy",
+"sum",
+"read_csv",
+"join",
+"functoinclude1",
+"functounclude2",
+"otherfunctoinclude3",
+"shouldalsobethere4",
+"stillincluded5",
+"stillincluded6",];
+
+function assertSetsEqual(set1, set2, message = '') {
+    try {
+        assert.deepStrictEqual(Array.from(new Set(set1)).sort(), Array.from(new Set(set2)).sort());
+    } catch (error) {
+        console.log(`Set 1: ${set1}`);
+        console.log(`Set 2: ${set2}`);
+        const difference1 = set1.filter(x => !set2.includes(x));
+        const difference2 = set2.filter(x => !set1.includes(x));
+        console.log(`Difference: ${difference1.concat(difference2)}`);
+        throw new Error(message);
+    }
+}
+
+// TODO: 'axis'=0 in pandas call need to be preserved too!!!. I can maybe only sanitize strings within function calls?? idk
+
+// Assertion that libraries equal expectedLibraries
+// console.log("libraries\n",libraries);
+// console.log("expectedLibrarries\n",expectedLibraries);
+assertSetsEqual(parsePythonScriptv4_out, expectedFinalanser, 'final does not equal expectedFinalanser')
+// assert.deepStrictEqual(finalanswer, expectedFinalanser);
