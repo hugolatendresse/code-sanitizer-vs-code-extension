@@ -82,7 +82,7 @@ function findAllKeywords(tree) {
             if (isParentOfCall(cursor.currentNode)) {
                 const firstIdentifier = cursor.currentNode.children[0].text;
                 // Check if first identifier is a keyword, that is, if it's in the following list ["pd", "np", "os", "plt", "deepcopy"]
-                if (keyWords.includes(firstIdentifier)) {
+                if (keyWords.some(keyword => firstIdentifier.startsWith(keyword))) {
                     const secondIdentifier = cursor.currentNode.children[2].text;
                     result.push(secondIdentifier);
                 }
