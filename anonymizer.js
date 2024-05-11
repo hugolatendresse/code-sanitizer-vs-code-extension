@@ -1,6 +1,7 @@
 const parsePythonScript = require('./python_parser');
 
 const sqlReservedWordsUpper = require('./reserved_words');
+const pythonReservedWordsUpper = require('./reserved_words');
 const shortWords = require('./shorter_word_list');
 
 const debug = false;
@@ -26,8 +27,8 @@ class Anonymizer {
             // this.wordList = JSON.parse(rawData);
             this.shuffleArray(this.wordList);
         }
-        this.sqlReservedWordsUpper = sqlReservedWordsUpper;
-        this.pythonReservedWordsUpper = new Set();
+        this.sqlReservedWordsUpper = new Set(sqlReservedWordsUpper);
+        this.pythonReservedWordsUpper = new Set(pythonReservedWordsUpper);
         this.updateReservedWordsUpper();
     }
 
@@ -107,3 +108,4 @@ class Anonymizer {
 }
 
 module.exports = Anonymizer;
+ 
