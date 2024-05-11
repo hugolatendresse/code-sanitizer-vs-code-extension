@@ -8,7 +8,7 @@ function printDebugInfo(someName, someVar, debug) {
         return;
     }
     console.log("\n\<<<<<<<<<<<<<<<<< In anonymizer.js <<<<<<<<<<<<<<<<<<<<<<<<");
-    console.log("This is the ", someName, ":");
+    console.log(someName, ":");
     console.log(someVar);
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 }
@@ -62,6 +62,13 @@ class Anonymizer {
 
     unanonymize(query) {
         printDebugInfo("trying to unanonymize this query", query, debug);
+        if (debug) {
+            console.log("mapping:");
+            // Iterate over the mapping object and print each key-value pair
+            Object.entries(this.mapping).forEach(([key, value]) => {
+                console.log(`${key}: ${value}`);
+            });
+        }
         Object.entries(this.mapping).forEach(([originalToken, sanitizedToken]) => {
             query = this.replaceInString(sanitizedToken, originalToken, query);
         });
