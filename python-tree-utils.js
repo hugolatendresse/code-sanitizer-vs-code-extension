@@ -25,13 +25,13 @@ import pandas as pd
 some_var = pd.include1(include5=sanitize1['sanitize2 sanitize3'], include6=0).sanitize4()
 `;
 
-// TODO handle this source code
+// TODO handle this source code  (create a unit test)
 sourceCode = `
 import pandas as pd
 sanitize0 = pd.include1(sanitize1['sanitize2'])
 `;
 
-// TODO handle this source code
+// TODO handle this source code (create a unit test)
 sourceCode = `
 		some_var = pd.functoinclude1.sum(pandas.read_csv(os.path.join('data','some folder with np.DONTGRAB in ) it' ,var1)['some column'].mean(), axis=0))
 		other_var = some_var + pd.functoinclude1.functounclude2.otherfunctoinclude3.shouldalsobethere4 \
