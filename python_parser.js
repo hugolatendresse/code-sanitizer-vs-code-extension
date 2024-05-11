@@ -1,6 +1,7 @@
 // TODO just create a huge dict of EVERY token in the script. Each token has its own dict that says what type of stuff it is. I can then easily look at
 // two tokens before to see if it's "import", for example
 const assert = require('assert');
+const debug = false;
 
 function assertSetsEqual(set1, set2, message = '') {
     try {
@@ -71,7 +72,9 @@ function processImports(importData, debug=false) {
     return Array.from(results);
 }
 
-function parsePythonScript(script, libraries, debug=false) {
+function parsePythonScript(script, debug=false) {
+    const extractedImports = getImports(pythonScript);
+    const libraries = processImports(extractedImports, debug);
     let results = new Set(libraries);
     let previousSize = -1;
 
@@ -155,10 +158,5 @@ const expectedFinalanser= ["os", "np", "os_path", "system", "pd", "plt", "deepco
 
 // TODO need to catch stillincluded6
 
-const extractedImports = getImports(pythonScript);
-const libraries = processImports(extractedImports, false);
-// const expectedLibraries = ["os", "np", "os_path", "system", "pd", "plt", "deepcopy", "numpy", "pandas", "matplotlib", "copy", "path", "pyplot"];
-// assertSetsEqual(libraries, expectedLibraries, 'libraries does not equal expectedLibraries')
-const parsePythonScript_out = parsePythonScript(pythonScript, libraries);
-assertSetsEqual(parsePythonScript_out, expectedFinalanser, 'final does not equal expectedFinalanser')
-// assert.deepStrictEqual(finalanswer, expectedFinalanser);
+const parsePythonScript_out = parsePythonScript(pythonScript, debug);
+assertSetsEqual(parsePythonScript_out, expectedFinalanser, 'final does not equal expectedFinalanser'); // Only Difference: stillincluded6
