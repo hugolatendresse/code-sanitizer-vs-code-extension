@@ -59,8 +59,9 @@ const pythonReservedWords = [
     'setattr', 'slice', 'sorted', 'staticmethod', 'str', 'sum', 'super', 'tuple',
     'type', 'vars', 'zip'   
 ];
-
 const pythonReservedWordsUpper = pythonReservedWords.map(word => word.toUpperCase());
 
-module.exports = sqlReservedWordsUpper;
-module.exports = pythonReservedWordsUpper;
+module.exports = {
+    sqlReservedWordsUpper,
+    pythonReservedWordsUpper
+};

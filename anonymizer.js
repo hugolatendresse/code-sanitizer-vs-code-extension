@@ -1,7 +1,5 @@
 const parsePythonScript = require('./python_parser');
-
-const sqlReservedWordsUpper = require('./reserved_words');
-const pythonReservedWordsUpper = require('./reserved_words');
+const { sqlReservedWordsUpper, pythonReservedWordsUpper } = require('./reserved_words');
 const shortWords = require('./shorter_word_list');
 
 const debug = false;
