@@ -319,7 +319,7 @@ suite('Python Parser Test Suite', () => {
 		"otherfunctoinclude3",
 		"shouldalsobethere4",
 		"stillincluded5",
-	//	"stillincluded6", // TODO need to be able to catch that too!!
+		"stillincluded6", // need to be able to catch that too!!
 	//	"axis", // TODO need to be able to catch that too!!
 	];
 

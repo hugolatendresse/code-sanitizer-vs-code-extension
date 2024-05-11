@@ -72,7 +72,7 @@ function isParentOfCall(node) {
 
 
 // Check all parents that have 3 children, two are identifiers, and the middle one is a dot. If the first identier starts with a keyword, then the second identifier is a keyword
-function findAllKeywords(tree) {
+function findAllKeywords(tree, keyWords) {
     const result = [];
     let visitedChildren = false;
     let cursor = tree.walk();
