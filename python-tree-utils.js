@@ -7,6 +7,57 @@
 
 const {Tree, Point, TreeCursor} = require("tree-sitter");
 
+
+
+// Define a function to check, given a node, if it has 3 children, the right one is an identifer, and the middle one is a dot
+function isParentOfCall(node) {
+    let out = node.children.length === 3 && node.children[1].text === '.' && node.children[2].type === 'identifier'
+    return out
+}
+
+const Parser = require('tree-sitter');
+const Python = require('tree-sitter-python');
+
+
+function findAllKeywordsInQuery(query, keyWords) {
+  const parser = new Parser();
+  parser.setLanguage(Python);
+  const tree = parser.parse(query);
+  return findAllKeywordsInTree(tree, keyWords);
+}
+
+// Check all parents that have 3 children, two are identifiers, and the middle one is a dot. If the first identier starts with a keyword, then the second identifier is a keyword
+// First param is the tree
+function findAllKeywordsInTree(tree, keyWords) {
+    const result = [];
+    let visitedChildren = false;
+    let cursor = tree.walk();
+    while (true) {
+        if (!visitedChildren) {
+            // result.push(cursor.currentNode);
+            if (isParentOfCall(cursor.currentNode)) {
+                const firstIdentifier = cursor.currentNode.children[0].text;
+                // Check if first identifier is a keyword, that is, if it's in the following list ["pd", "np", "os", "plt", "deepcopy"]
+                if (keyWords.some(keyword => firstIdentifier.startsWith(keyword))) {
+                    const secondIdentifier = cursor.currentNode.children[2].text;
+                    result.push(secondIdentifier);
+                }
+            }
+            if (!cursor.gotoFirstChild()) {
+                visitedChildren = true;
+            }
+        } else if (cursor.gotoNextSibling()) {
+            visitedChildren = false;
+        } else if (!cursor.gotoParent()) {
+            break;
+        }
+    }
+    return result;
+}
+
+
+
+
 function getAllNodes(tree) {
   const result = [];
   let visitedChildren = false;
@@ -27,6 +78,7 @@ function getAllNodes(tree) {
 }
 
 module.exports = {
+  findAllKeywordsInQuery,
   getAllNodes
 }
 

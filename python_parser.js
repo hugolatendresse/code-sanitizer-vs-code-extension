@@ -1,6 +1,7 @@
 // TODO just create a huge dict of EVERY token in the script. Each token has its own dict that says what type of stuff it is. I can then easily look at
 // two tokens before to see if it's "import", for example
 const assert = require('assert');
+const {findAllKeywordsInQuery} = require("./python-tree-utils");
 const debug = false;
 
 // TODO consider the order of the replacmeent. What happens if a word is part of another word or stuff like that? 
@@ -80,44 +81,50 @@ function parsePythonScript(script, debug=false) {
     let results = new Set(libraries);
     let previousSize = -1;
 
-    while (previousSize !== results.size) {
-        if (debug) {
-            console.log("STARTING LOOP!!!!!!!!!!!!!!!!!!!!!!!!")
-            console.log("RESULT SIZE IS",results.size);    
-            console.log("SEARCHING FOR LIBRARIES",Array.from(results));
-        }
 
-        previousSize = results.size;
-
-        // Create a regex pattern to match the library usage
-        const libPattern = '\\b(' + libraries.join('|') + ')\\.([a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)*)';
-   
-        const pattern = new RegExp(libPattern, 'g');
-
-        // This will hold all matches found
-        let match;
-        while ((match = pattern.exec(script)) !== null) {
-
-            // Extract the function or module name after the library name
-            if (debug) {
-                console.log("MATCH IS",match);
-            }
-            
-            // Split the chain after the first property and add each one to the results
-            const properties = match[2].split('.');
-            properties.forEach(functionName => {
-                if (functionName) {
-                    if (debug) {
-                        console.log("ADDING",functionName);
-                    }
-                    results.add(functionName);
-                    if (debug) {
-                        console.log("RESULTS SIZE IS NOW",results.size);
-                    }
-                }
-            });
-        }
-    }
+    // TODO this was use before, need to see if any good, or if it adds anything
+    // while (previousSize !== results.size) {
+    //     if (debug) {
+    //         console.log("STARTING LOOP!!!!!!!!!!!!!!!!!!!!!!!!")
+    //         console.log("RESULT SIZE IS",results.size);
+    //         console.log("SEARCHING FOR LIBRARIES",Array.from(results));
+    //     }
+    //
+    //     previousSize = results.size;
+    //
+    //     // Create a regex pattern to match the library usage
+    //     const libPattern = '\\b(' + libraries.join('|') + ')\\.([a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)*)';
+    //
+    //     const pattern = new RegExp(libPattern, 'g');
+    //
+    //     // This will hold all matches found
+    //     let match;
+    //     while ((match = pattern.exec(script)) !== null) {
+    //
+    //         // Extract the function or module name after the library name
+    //         if (debug) {
+    //             console.log("MATCH IS",match);
+    //         }
+    //
+    //         // Split the chain after the first property and add each one to the results
+    //         const properties = match[2].split('.');
+    //         properties.forEach(functionName => {
+    //             if (functionName) {
+    //                 if (debug) {
+    //                     console.log("ADDING",functionName);
+    //                 }
+    //                 results.add(functionName);
+    //                 if (debug) {
+    //                     console.log("RESULTS SIZE IS NOW",results.size);
+    //                 }
+    //             }
+    //         });
+    //     }
+    // }
+    // return Array.from(results);
+    const newKeyWords = findAllKeywordsInQuery(script, libraries);
+    // Combine the two sets
+    results = new Set([...results, ...newKeyWords]);
     return Array.from(results);
 }
 

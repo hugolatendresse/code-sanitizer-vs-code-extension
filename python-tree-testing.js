@@ -7,12 +7,7 @@
 //     all_packages = [match[1] for match in re.finditer(pattern, html)]
 //     print(f'Found {len(all_packages):,} packages\n')
 
-const Parser = require('tree-sitter');
-const Python = require('tree-sitter-python');
-const {getAllNodes} = require("./python-tree-utils");
 
-const parser = new Parser();
-parser.setLanguage(Python);
 
 let sourceCode = 'x = 1; print(x);';
 
@@ -44,7 +39,6 @@ sourceCode = `
 
 let keyWords = ['pd', 'np', 'os', 'plt', 'deepcopy'];
 
-const tree = parser.parse(sourceCode);
 const allNodes = getAllNodes(tree);
 // Create list of node[i].text for all nodes
 const allNodeTexts = allNodes.map(node => sourceCode.slice(node.startIndex, node.endIndex));
@@ -63,41 +57,6 @@ const allNodeTexts = allNodes.map(node => sourceCode.slice(node.startIndex, node
 
 // TODO still need to sanitize what comes from custom libraries. Need a full list of all pipy librairies!
 
-
-// Define a function to check, given a node, if it has 3 children, the right one is an identifer, and the middle one is a dot
-function isParentOfCall(node) {
-    let out = node.children.length === 3 && node.children[1].text === '.' && node.children[2].type === 'identifier'
-    return out
-}
-
-
-// Check all parents that have 3 children, two are identifiers, and the middle one is a dot. If the first identier starts with a keyword, then the second identifier is a keyword
-function findAllKeywords(tree, keyWords) {
-    const result = [];
-    let visitedChildren = false;
-    let cursor = tree.walk();
-    while (true) {
-        if (!visitedChildren) {
-            // result.push(cursor.currentNode);
-            if (isParentOfCall(cursor.currentNode)) {
-                const firstIdentifier = cursor.currentNode.children[0].text;
-                // Check if first identifier is a keyword, that is, if it's in the following list ["pd", "np", "os", "plt", "deepcopy"]
-                if (keyWords.some(keyword => firstIdentifier.startsWith(keyword))) {
-                    const secondIdentifier = cursor.currentNode.children[2].text;
-                    result.push(secondIdentifier);
-                }
-            }
-            if (!cursor.gotoFirstChild()) {
-                visitedChildren = true;
-            }
-        } else if (cursor.gotoNextSibling()) {
-            visitedChildren = false;
-        } else if (!cursor.gotoParent()) {
-            break;
-        }
-    }
-    return result;
-}
 
 let result = findAllKeywords(tree);
 console.log("results are:::::", result);
