@@ -7,6 +7,10 @@
 //     all_packages = [match[1] for match in re.finditer(pattern, html)]
 //     print(f'Found {len(all_packages):,} packages\n')
 
+const Anonymizer = require("./anonymizer");
+
+let a = new Anonymizer();
+a.anonymize("SELECT * FROM table WHERE column = 'value'");
 
 
 let sourceCode = 'x = 1; print(x);';
