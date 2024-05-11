@@ -1,6 +1,19 @@
 // TODO just create a huge dict of EVERY token in the script. Each token has its own dict that says what type of stuff it is. I can then easily look at
 // two tokens before to see if it's "import", for example
+const assert = require('assert');
 
+function assertSetsEqual(set1, set2, message = '') {
+    try {
+        assert.deepStrictEqual(Array.from(new Set(set1)).sort(), Array.from(new Set(set2)).sort());
+    } catch (error) {
+        console.log(`Set 1: ${set1}`);
+        console.log(`Set 2: ${set2}`);
+        const difference1 = set1.filter(x => !set2.includes(x));
+        const difference2 = set2.filter(x => !set1.includes(x));
+        console.log(`Difference: ${difference1.concat(difference2)}`);
+        throw new Error(message);
+    }
+}
 
 function getImports(script) {
     const importRegex = /^\s*import\s+([a-zA-Z0-9_]+)(\s+as\s+([a-zA-Z0-9_]+))?|^\s*from\s+([a-zA-Z0-9_.]+)\s+import\s+(.*)$/gm;
@@ -28,7 +41,7 @@ function processImports(importData, debug=false) {
     const results = new Set();
 
     if (debug) {
-        console.log("importData",importData);
+        console.log("importData (input of processImports)",importData);
     }
 
     importData.forEach(entry => {
@@ -45,6 +58,7 @@ function processImports(importData, debug=false) {
             if (item.includes(' as ')) {
                 // For aliasing, add only the alias name
                 const [originalName, aliasName] = item.split(' as ');
+                results.add(originalName.trim());
                 results.add(aliasName.trim());
             } else {
                 // For simple imports, add only the name of the imported item
@@ -53,64 +67,11 @@ function processImports(importData, debug=false) {
         });
     });
 
+    console.log("results from processImports",results);
     return Array.from(results);
 }
 
-function parsePythonScript(script, libraries) {
-    const results = [];
-    // Create a regex pattern to match the library usage
-    const libPattern ='\\b(' + libraries.join('|') + ')\\.([a-zA-Z_][a-zA-Z0-9_]*)';
-    // const libPattern = libraries.map(lib => `${lib}\\s*\\.\\s*([a-zA-Z_][a-zA-Z0-9_]*)`).join('|');
-    const pattern = new RegExp(libPattern, 'g');
-
-    // This will hold all matches found
-    let match;
-    while ((match = pattern.exec(script)) !== null) {
-        // Extract the function or module name after the library name
-        // const functionName = match[1] || match[3] || match[5]; // Depending on which library matched
-        const functionName = match[2] 
-        if (functionName && !results.includes(functionName)) {
-            results.push(functionName);
-        }
-    }
-    return results;
-}
-
-const pythonScript = `
-import os
-import numpy as np
-from os import path as os_path, system
-import pandas as pd
-from matplotlib import pyplot as plt
-from copy import deepcopy
-
-some_var = np.sum(pandas.read_csv(os.path.join('data','some folder',var1)['some column'], axis=0))
-other_var = some_var + pd.functoinclude1.functounclude2.otherfunctoinclude3.shouldalsobethere4.stillincluded5('hello world').stillincluded6
-`;
-
-// TODO: need to catch if import * is used and say that's not supported right now
-
-// TODO see exactly what works and what doesn't below and prune the two functions above
-
-const extractedImports = getImports(pythonScript);
-// console.log("pythonScript2:\n",pythonScript);
-// console.log("extracted imports\n",extractedImports);
-
-// console.log("\n\n\n")
-
-const expectedLibraries = ["os", "np", "os_path", "system", "pd", "plt", "deepcopy", "numpy", "pandas", "matplotlib", "copy"];
-const libraries = processImports(extractedImports);
-// Assertion that libraries equal expectedLibraries
-// console.log("libraries\n",libraries);
-// console.log("expectedLibrarries\n",expectedLibraries);
-const assert = require('assert');
-// assert.deepStrictEqual(libraries, expectedLibraries, 'libraries does not equal expectedLibraries');
-assertSetsEqual(libraries, expectedLibraries, 'libraries does not equal expectedLibraries')
-
-// console.log("\n\n\n\n")
-
-
-function parsePythonScriptv4(script, libraries, debug=false) {
+function parsePythonScript(script, libraries, debug=false) {
     let results = new Set(libraries);
     let previousSize = -1;
 
@@ -156,10 +117,17 @@ function parsePythonScriptv4(script, libraries, debug=false) {
     return Array.from(results);
 }
 
-const parsePythonScriptv4_out = parsePythonScriptv4(pythonScript, libraries);
-console.log("parsePythonScriptv4_out", parsePythonScriptv4_out);
-console.log("\n");
+const pythonScript = `
+import os
+import numpy as np
+from os import path as os_path, system
+import pandas as pd
+from matplotlib import pyplot as plt
+from copy import deepcopy
 
+some_var = np.sum(pandas.read_csv(os.path.join('data','some folder',var1)['some column'], axis=0))
+other_var = some_var + pd.functoinclude1.functounclude2.otherfunctoinclude3.shouldalsobethere4.stillincluded5('hello world').stillincluded6
+`;
 
 const expectedFinalanser= ["os", "np", "os_path", "system", "pd", "plt", "deepcopy",
 "numpy",
@@ -178,23 +146,19 @@ const expectedFinalanser= ["os", "np", "os_path", "system", "pd", "plt", "deepco
 "stillincluded5",
 "stillincluded6",];
 
-function assertSetsEqual(set1, set2, message = '') {
-    try {
-        assert.deepStrictEqual(Array.from(new Set(set1)).sort(), Array.from(new Set(set2)).sort());
-    } catch (error) {
-        console.log(`Set 1: ${set1}`);
-        console.log(`Set 2: ${set2}`);
-        const difference1 = set1.filter(x => !set2.includes(x));
-        const difference2 = set2.filter(x => !set1.includes(x));
-        console.log(`Difference: ${difference1.concat(difference2)}`);
-        throw new Error(message);
-    }
-}
+
+// TODO: need to catch if import * is used and say that's not supported right now
+
+// TODO see exactly what works and what doesn't below and prune the two functions above
 
 // TODO: 'axis'=0 in pandas call need to be preserved too!!!. I can maybe only sanitize strings within function calls?? idk
 
-// Assertion that libraries equal expectedLibraries
-// console.log("libraries\n",libraries);
-// console.log("expectedLibrarries\n",expectedLibraries);
-assertSetsEqual(parsePythonScriptv4_out, expectedFinalanser, 'final does not equal expectedFinalanser')
+// TODO need to catch stillincluded6
+
+const extractedImports = getImports(pythonScript);
+const libraries = processImports(extractedImports, false);
+// const expectedLibraries = ["os", "np", "os_path", "system", "pd", "plt", "deepcopy", "numpy", "pandas", "matplotlib", "copy", "path", "pyplot"];
+// assertSetsEqual(libraries, expectedLibraries, 'libraries does not equal expectedLibraries')
+const parsePythonScript_out = parsePythonScript(pythonScript, libraries);
+assertSetsEqual(parsePythonScript_out, expectedFinalanser, 'final does not equal expectedFinalanser')
 // assert.deepStrictEqual(finalanswer, expectedFinalanser);
