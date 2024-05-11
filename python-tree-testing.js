@@ -9,7 +9,7 @@
 
 const Parser = require('tree-sitter');
 const Python = require('tree-sitter-python');
-const {getAllNodes} = require("./python-tree-functions-that-work");
+const {getAllNodes} = require("./python-tree-utils");
 
 const parser = new Parser();
 parser.setLanguage(Python);
