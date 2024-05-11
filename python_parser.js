@@ -160,3 +160,6 @@ const expectedFinalanser= ["os", "np", "os_path", "system", "pd", "plt", "deepco
 
 const parsePythonScript_out = parsePythonScript(pythonScript, debug);
 assertSetsEqual(parsePythonScript_out, expectedFinalanser, 'final does not equal expectedFinalanser'); // Only Difference: stillincluded6
+
+// Export parsePythonScript so it can be used in extension.js
+module.exports = parsePythonScript;

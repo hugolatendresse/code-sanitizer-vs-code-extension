@@ -12,9 +12,7 @@ function activate(context) {
         if (editor) {
             const selection = editor.selection;
             const text = editor.document.getText(selection);
-            // let anonymizer = new Anonymizer();
             let modifiedText = anonymizer.anonymize(text);
-            // const modifiedText = text.replace(/JOIN/g, 'NOTAJOINANYMORE!!!!!');
 
             vscode.env.clipboard.writeText(modifiedText)
                 .then(() => {

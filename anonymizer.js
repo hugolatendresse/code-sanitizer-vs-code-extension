@@ -1,3 +1,5 @@
+import parsePythonScript from './python_parser';
+
 const sqlReservedWordsUpper = require('./reserved_words');
 const shortWords = require('./shorter_word_list');
 
@@ -47,6 +49,19 @@ class Anonymizer {
 
     anonymize(query) {
         const tokens = query.match(/\b\w+\b/g);
+        
+        // TODO need to figure out why Anonymizer can't be instnatiated anymore in extension.js
+        // TODO the argument of parsePythonScript shoud NOT be query, but the entire script!
+        // TODO need to decide on a solution to parse entire script. It must read it either when copy is called, or before whenever the session is opened. 
+        // TODO Also need to think what will happen to .mapping. For example, what if new stuff gets discovered as the tool sees more scripts, etc..  
+        let wordsFromPythonScript = parsePythonScript();
+        let upperCasePythonWords = wordsFromPythonScript.map(word => word.toUpperCase());
+        let reservedWords = [...sqlReservedWordsUpper, ...upperCasePythonWords];
+
+        
+
+        // parsePythonScript(query, debug)
+
         tokens.forEach(token => {
             const upperToken = token.toUpperCase();
             // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
