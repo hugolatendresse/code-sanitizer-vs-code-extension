@@ -16,6 +16,7 @@ function printDebugInfo(someName, someVar, debug) {
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 }
 
+
 class Anonymizer {
     constructor(tokenMode = 'dictionary') {
         this.mapping = {}; // Dictionary from original tokens to sanitized tokens
