@@ -90,10 +90,10 @@ other_var = some_var + pd.functoinclude1.functounclude2.otherfunctoinclude3.shou
 // TODO see exactly what works and what doesn't below and prune the two functions above
 
 const extractedImports = getImports(pythonScript);
-console.log("pythonScript2:\n",pythonScript);
-console.log("extracted imports\n",extractedImports);
+// console.log("pythonScript2:\n",pythonScript);
+// console.log("extracted imports\n",extractedImports);
 
-console.log("\n\n\n")
+// console.log("\n\n\n")
 
 const expectedLibraries = ["os", "np", "os_path", "system", "pd", "plt", "deepcopy"];
 const libraries = processImports(extractedImports);
@@ -104,9 +104,47 @@ const assert = require('assert');
 assert.deepStrictEqual(libraries, expectedLibraries, 'libraries does not equal expectedLibraries');
 
 
-console.log("\n\n\n\n")
+// console.log("\n\n\n\n")
 
 
-const usedNames = parsePythonScript(pythonScript, libraries);
-// Ass
-console.log(usedNames);
+const parsePythonScript_out = parsePythonScript(pythonScript, libraries);
+// console.log("parsePythonScript_out", parsePythonScript_out);
+// console.log("\n");
+
+function parsePythonScriptv3(script, libraries) {
+    let results = new Set(libraries);
+    let previousSize = -1;
+
+    while (previousSize !== results.size) {
+        console.log("STARTING LOOP!!!!!!!!!!!!!!!!!!!!!!!!")
+        console.log("RESULTS ARE",Array.from(results));
+        console.log("RESULTS IS",results.size);
+
+        previousSize = results.size;
+
+        // Create a regex pattern to match the library usage
+        console.log("SEARCHING FOR LIBRARIES",Array.from(results));
+        const libPattern = Array.from(results).map(lib => `${lib}\\s*\\.\\s*([a-zA-Z_][a-zA-Z0-9_]*)`).join('|');
+        const pattern = new RegExp(libPattern, 'g');
+
+        // This will hold all matches found
+        let match;
+        while ((match = pattern.exec(script)) !== null) {
+            // Extract the function or module name after the library name
+            console.log("MATCH IS",match);
+            const functionName = match[1] || match[3] || match[5]; // Depending on which library matched
+            if (functionName) {
+                console.log("ADDING",functionName);
+                results.add(functionName);
+                console.log("RESULTS SIZE IS NOW",results.size);
+            }
+        }
+    }
+
+    return Array.from(results);
+}
+
+
+const parsePythonScriptv3_out = parsePythonScriptv3(pythonScript, libraries);
+console.log("parsePythonScriptv3_out", parsePythonScriptv3_out);
+console.log("\n");
