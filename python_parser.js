@@ -3,8 +3,22 @@
 const assert = require('assert');
 const debug = false;
 
+// TODO consider the order of the replacmeent. What happens if a word is part of another word or stuff like that? 
+
+// TODO: need to catch if import * is used and say that's not supported right now
+
+// TODO see exactly what works and what doesn't below and prune the two functions above
+
+// TODO: 'axis'=0 in pandas call need to be preserved too!!!. I can maybe only sanitize strings within function calls?? idk
+
+// TODO need to catch stillincluded6 (see test script)
+
+// TODO handle numbers better? I could just not replace them, or replace by other numbers, OR replace by num1, num2, etc 
 
 function getImports(script) {
+
+    // TODO need to refactor this since it won't be able to handle imports over multiple lines (with a \)
+
     const importRegex = /^\s*import\s+([a-zA-Z0-9_]+)(\s+as\s+([a-zA-Z0-9_]+))?|^\s*from\s+([a-zA-Z0-9_.]+)\s+import\s+(.*)$/gm;
     let match;
     const imports = [];
@@ -76,7 +90,6 @@ function parsePythonScript(script, debug=false) {
         previousSize = results.size;
 
         // Create a regex pattern to match the library usage
-        // const libPattern ='\\b(' + libraries.join('|') + ')\\.([a-zA-Z_][a-zA-Z0-9_]*)';
         const libPattern = '\\b(' + libraries.join('|') + ')\\.([a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)*)';
    
         const pattern = new RegExp(libPattern, 'g');
@@ -108,15 +121,6 @@ function parsePythonScript(script, debug=false) {
     return Array.from(results);
 }
 
-
-
-// TODO: need to catch if import * is used and say that's not supported right now
-
-// TODO see exactly what works and what doesn't below and prune the two functions above
-
-// TODO: 'axis'=0 in pandas call need to be preserved too!!!. I can maybe only sanitize strings within function calls?? idk
-
-// TODO need to catch stillincluded6 (see test script)
 
 
 // Export parsePythonScript so it can be used in extension.js
