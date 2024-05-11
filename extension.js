@@ -33,7 +33,7 @@ function activate(context) {
             let clipboardText = await vscode.env.clipboard.readText();
             let modifiedText = anonymizer.unanonymize(clipboardText);
     
-            editor.edit(editBuilder => {
+            await editor.edit(editBuilder => {
                 editBuilder.replace(editor.selection, modifiedText);
             });
         }

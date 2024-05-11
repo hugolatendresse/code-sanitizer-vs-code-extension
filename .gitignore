@@ -1,3 +1,5 @@
+node_modules/
+.vscode/
 .vscode/**
 .vscode-test/**
 .yarnrc
@@ -6,3 +8,4 @@ vsc-extension-quickstart.md
 **/*.map
 **/.eslintrc.json
 **/.vscode-test.*
+*.vsix

@@ -1,6 +1,18 @@
 const sqlReservedWordsUpper = require('./reserved_words');
 const shortWords = require('./shorter_word_list');
 
+const debug = false;
+
+function printDebugInfo(someName, someVar, debug) {
+    if (!debug) {
+        return;
+    }
+    console.log("\n\<<<<<<<<<<<<<<<<< In anonymizer.js <<<<<<<<<<<<<<<<<<<<<<<<");
+    console.log(someName, ":");
+    console.log(someVar);
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+}
+
 class Anonymizer {
     constructor(tokenMode = 'dictionary') {
         this.mapping = {}; // Dictionary from original tokens to sanitized tokens
@@ -47,11 +59,20 @@ class Anonymizer {
         });
         return query;
     }
-    
+
     unanonymize(query) {
+        printDebugInfo("trying to unanonymize this query", query, debug);
+        if (debug) {
+            console.log("mapping:");
+            // Iterate over the mapping object and print each key-value pair
+            Object.entries(this.mapping).forEach(([key, value]) => {
+                console.log(`${key}: ${value}`);
+            });
+        }
         Object.entries(this.mapping).forEach(([originalToken, sanitizedToken]) => {
             query = this.replaceInString(sanitizedToken, originalToken, query);
         });
+        printDebugInfo("returning this query", query, debug);
         return query;
     }
 

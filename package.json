@@ -19,7 +19,6 @@
     "onCommand:code-sanitizer.anonymizeAndCopy"
   ],
   "main": "./extension.js",
-  
   "contributes": {
     "keybindings": [
       {
@@ -35,23 +34,26 @@
         "when": "editorTextFocus"
       }
     ],
-    "commands": [{
-      "command": "code-sanitizer.anonymizeAndCopy",
-      "title": "Anonymize and Copy Code"
-    }, {
-      "command": "code-sanitizer.unanonymizeAndPaste",
-      "title": "Unanonymize and Paste Code"
-    }],
+    "commands": [
+      {
+        "command": "code-sanitizer.anonymizeAndCopy",
+        "title": "Anonymize and Copy Code"
+      },
+      {
+        "command": "code-sanitizer.unanonymizeAndPaste",
+        "title": "Unanonymize and Paste Code"
+      }
+    ],
     "menus": {
       "editor/context": [
         {
           "command": "code-sanitizer.anonymizeAndCopy",
           "when": "editorTextFocus"
-      },
-      {
+        },
+        {
           "command": "code-sanitizer.unanonymizeAndPaste",
           "when": "editorTextFocus"
-      }
+        }
       ]
     }
   },
@@ -61,12 +63,15 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.68.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
-    "eslint": "^8.57.0",
-    "typescript": "^5.4.5",
+    "@types/vscode": "^1.68.0",
     "@vscode/test-cli": "^0.0.8",
-    "@vscode/test-electron": "^2.3.9"
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "vscode": "^1.1.34"
   }
 }
