@@ -1,5 +1,18 @@
 // docs for tree-sitter: https://tree-sitter.github.io/tree-sitter/using-parsers
 
+const {findAllKeywordsInTree, findAllKeywordsInQuery, getAllNodes} = require("./python-tree-utils");
+const Anonymizer = require("./anonymizer");
+const Parser = require("tree-sitter");
+const Python = require("tree-sitter-python");
+
+
+
+// TODO create unit test for this
+let query = `
+		pd.keyword1.keyword2(sanitize1, sanitize2).keyword3.keyword4()
+`;
+
+
 // TODO
 //     # get list of all PyPI packages
 //     print('Getting list of all PyPI packages ... ', end='', flush=True)
@@ -8,7 +21,6 @@
 //     all_packages = [match[1] for match in re.finditer(pattern, html)]
 //     print(f'Found {len(all_packages):,} packages\n')
 
-const Anonymizer = require("./anonymizer");
 
 let a = new Anonymizer();
 a.anonymize("SELECT * FROM table WHERE column = 'value'");
@@ -31,18 +43,34 @@ import pandas as pd
 sanitize0 = pd.include1(sanitize1['sanitize2'])
 `;
 
-// TODO handle this source code (create a unit test)
-sourceCode = `
-		some_var = pd.functoinclude1.sum(pandas.read_csv(os.path.join('data','some folder with np.DONTGRAB in ) it' ,var1)['some column'].mean(), axis=0))
-		other_var = some_var + pd.functoinclude1.functounclude2.otherfunctoinclude3.shouldalsobethere4 \
-		.stillincluded5('hello world').stillincluded6
+
+
+// TODO create unit test for this
+query = `
+		pd.keyword1.keyword2(keyword6=sanitize1, keyword7 = sanitize2).keyword3.keyword4()
+		sanitize3 = sanitize4(sanitize5 = sanitize6, sanitize7=sanitize8)
 `;
 
-sourceCode = `
-		pd.keyword1.keyword2(sanitize1, sanitize2).keyword3.keyword4()
+// TODO create unit test for this
+query = "pd.keyword1(keyword6=sanitize1).keyword3";
+
+// TODO handle this source code (create a unit test)
+query = `
+		some_var = pd.keyword1.sum(pandas.read_csv(os.path.join('data','some folder with np.DONTGRAB in ) it' ,var1)['some column'].mean(), axis=0))
+		other_var = some_var + pd.keyword2.keyword3(keyword7=sanitize1, keyword8 = sanitize9).keyword4 \
+		.keyword5('hello world').keyword6(keywork9='sanitize2', keyword10='sanitize3', keyword11='sanitize4').keyword12
 `;
+
 
 let keyWords = ['pd', 'np', 'os', 'plt', 'deepcopy'];
+
+const parser = new Parser();
+parser.setLanguage(Python);
+console.log("-----------------CREATING TREE FOR:-----------------\n")
+console.log(query)
+const tree = parser.parse(query);
+console.log("-----------------CREATED TREE-----------------")
+
 
 const allNodes = getAllNodes(tree);
 // Create list of node[i].text for all nodes
@@ -60,15 +88,11 @@ const allNodeTexts = allNodes.map(node => sourceCode.slice(node.startIndex, node
 
 // allNodes[20] has 'keyword3'
 
-// TODO still need to sanitize what comes from custom libraries. Need a full list of all pipy librairies!
 
-
-let result = findAllKeywords(tree);
+let result = findAllKeywordsInTree(tree, keyWords);
 console.log("results are:::::", result);
 console.log("end of results");
 // console.log(allNodes);
-
-// TODO Conjecture: when two identifiers are separated by a dot, one follows the other in the code
 
 console.log(allNodeTexts);
 // Iterate over allNodeTexts and print one by one
@@ -76,79 +100,29 @@ allNodeTexts.forEach(nodeText => {
     console.log(nodeText);
 });
 
-async function findNodeByText(tree, sourceCode, searchText) {
-
-    const cursor = tree.walk();
-    const matchingNodes = [];
-
-    do {
-        const node = cursor.currentNode;
-        const nodeText = sourceCode.slice(node.startIndex, node.endIndex);
-        if (nodeText === searchText) {
-            matchingNodes.push(node);
-        }
-    } while (cursor.gotoNext());
-
-    return matchingNodes;
-}
-
-// Example usage
-const searchText = "read_csv";
-findNodeByText(sourceCode, searchText).then(matchingNodes => {
-    matchingNodes.forEach(node => {
-        console.log(`Found node type: ${node.type} at [${node.startPosition.row}, ${node.startPosition.column}]`);
-    });
-});
-
-async function printNodeTextsAndIdentifiers(tree, sourceCode) {
-
-    const cursor = tree.walk();
-
-    function traverse(cursor, depth = 0) {
-        do {
-            const node = cursor.currentNode;
-            const nodeText = sourceCode.slice(node.startIndex, node.endIndex);
-            const identifier = `${node.type}-${node.startPosition.row},${node.startPosition.column}`;
-
-            // Print node type, text, and identifier
-            console.log(`${' '.repeat(depth * 2)}Node: ${node.type}, Text: "${nodeText}", Identifier: ${identifier}`);
-
-            if (cursor.firstChild) {
-                traverse(cursor, depth + 1);
-                cursor.parent();
+function findNodeByText(tree, searchText) {
+    let visitedChildren = false;
+    let cursor = tree.walk();
+    while (true) {
+        if (!visitedChildren) {
+            // result.push(cursor.currentNode);
+            // Check if text of current node is equal to searchText
+            if (cursor.currentNode.text === searchText) {
+                return cursor.currentNode;
             }
-        } while (cursor.gotoNextSibling());
+            if (!cursor.gotoFirstChild()) {
+                visitedChildren = true;
+            }
+        } else if (cursor.gotoNextSibling()) {
+            visitedChildren = false;
+        } else if (!cursor.gotoParent()) {
+            break;
+        }
     }
-
-    traverse(cursor);
+    return null;
 }
 
-printNodeTextsAndIdentifiers(tree, sourceCode);
 
+let x = findNodeByText(tree, 'keyword11');
+console.log(x.text);
 
-// If your source code changes, you can update the syntax tree. This will take less time than the first parse.
-// However, can't really use that in my case, since I won't know what changed
-// let newSourceCode = 'x = 1; y=6; print(x+y);';
-// tree.edit({
-//   startIndex: 0,
-//   oldEndIndex: 3,
-//   newEndIndex: 5,
-//   startPosition: {row: 0, column: 0},
-//   oldEndPosition: {row: 0, column: 3},
-//   newEndPosition: {row: 0, column: 5},
-// });
-// const newTree = parser.parse(newSourceCode, tree);
-// console.log(newTree.rootNode.toString());
-
-
-// Note might be useful to deal with individual lines with a callback, but can't use it be default since a python line can span multiple lines
-// const sourceLines = [
-//     'let x = 1;',
-//     'console.log(x);'
-//   ];
-//   const tree = parser.parse((index, position) => {
-//     let line = sourceLines[position.row];
-//     if (line) {
-//       return line.slice(position.column);
-//     }
-//   });
