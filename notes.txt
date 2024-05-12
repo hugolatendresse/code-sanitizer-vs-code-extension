@@ -1,9 +1,8 @@
 Python packages are considered public (and therefore are not sanitized) if they are in this list of the 8000 most downloaded
 packages in April 2024 https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.min.json
 
-[
-{"download_count":75251,"project":"colcon-devtools"},
-{"download_count":75241,"project":"price-parser"},
-{"download_count":75228,"project":"glean-parser"},
-{"download_count":75209,"project":"nncf"},{"download_count":75155,"project":"launchpadlib"},{"download_count":75128,"project":"googlesearch-python"},{"download_count":75112,"project":"json-logging-py"},{"download_count":75104,"project":"google-cloud-runtimeconfig"},{"download_count":75066,"project":"flyteidl"},{"download_count":75046,"project":"nvgpu"},{"download_count":75041,"project":"amqplib"},{"download_count":75016,"project":"super-csv"},{"download_count":75008,"project":"yachalk"},{"download_count":74996,"project":"poppler-utils"},{"download_count":74990,"project":"edx-name-affirmation"},{"download_count":74966,"project":"otel-extensions"},{"download_count":74943,"project":"nemo-text-processing"},{"download_count":74912,"project":"django-prettyjson"}
-]
+To publish: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#publishing-extensions
+vsce package
+vsce publish
+
+Make sure all images are on dev on the github
