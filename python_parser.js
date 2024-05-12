@@ -4,7 +4,7 @@ const { printDebugInfo } = require('./utils');
 
 // two tokens before to see if it's "import", for example
 const assert = require('assert');
-const {findAllKeywordsInTree, findAllKeywordsInQuery, getAllNodes} = require("./python-tree-utils");
+const {getAllNodes, findNodeByText, findAllKeywordsInTree, findAllKeywordsInQuery} = require("./python-tree-utils");
 const debug = false;
 
 // TODO: need to catch if import * is used and say that's not supported right now
