@@ -1,5 +1,8 @@
 # Change Log
 
+### 0.2.2
+- Extended Python keywords
+
 ### 0.2.0
 - Now supports Python
 
