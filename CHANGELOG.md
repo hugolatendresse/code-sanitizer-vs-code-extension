@@ -19,7 +19,7 @@
 - Use short dictionary words only
 
 ### 0.1.3
-- README updates
+- Added README
 - Added icon
 
 ### 0.1.0
