@@ -1,6 +1,7 @@
 const parsePythonScript = require('./python_parser');
 const { sqlReservedWordsUpper, pythonReservedWordsUpper } = require('./reserved_words');
 const shortWords = require('./shorter_word_list');
+const topPyPIProjectNames = require('./top-pypi-project'); // TODO link to full thing!!!
 
 const debug = false;
 
@@ -13,7 +14,6 @@ function printDebugInfo(someName, someVar, debug) {
     console.log(someVar);
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 }
-
 
 class Anonymizer {
     constructor(tokenMode = 'dictionary') {
@@ -29,6 +29,8 @@ class Anonymizer {
         this.sqlReservedWordsUpper = new Set(sqlReservedWordsUpper);
         this.pythonReservedWordsUpper = new Set(pythonReservedWordsUpper);
         this.updateReservedWordsUpper();
+        this.topPyPIProjectNames = new Set(topPyPIProjectNames);
+        // this.topPyPIProjectNames = new Set(require('./top-pypi-project-names'));
     }
 
     generateRandomString(length = 8) {
@@ -98,13 +100,16 @@ class Anonymizer {
         }
     }
 
+    // DOING THAT IN CONSTRUCTOR FOR NOW
     // Fetch the top PyPI project names if haven't been done yet, and return them
-    get topPyPIProjectNames() {
-        if (!this._topPyPIProjectNames) {
-            this._topPyPIProjectNames = new Set(require('./top-pypi-project-names'));
-        }
-        return this._topPyPIProjectNames;
-    }
+    // get topPyPIProjectNames() {
+    //     return new Promise((resolve, reject) => {
+    //         if (!this._topPyPIProjectNames) {
+    //             this._topPyPIProjectNames = new Set(require('./top-pypi-project-names'));
+    //         }
+    //         resolve(this._topPyPIProjectNames);
+    //     });
+    // }
 
     read_entire_python_script(allText) {
         let wordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);

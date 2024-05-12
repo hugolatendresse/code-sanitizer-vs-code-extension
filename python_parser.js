@@ -1,5 +1,6 @@
 // TODO still need to sanitize what comes from custom libraries. Need a full list of all pipy librairies!
 
+const { printDebugInfo } = require('./utils');
 
 // two tokens before to see if it's "import", for example
 const assert = require('assert');
@@ -60,6 +61,11 @@ function processImports(importData, topPyPIProjectNames, debug=false) {
     importData.forEach(entry => {
         // Only include if the module is a PyPI project. Need to look at first token in entry.module
         const firstToken = entry.module.split('.')[0];
+
+        //Print the type of topPyPIProjectNames
+        printDebugInfo("topPyPIProjectNames", topPyPIProjectNames);
+        printDebugInfo("topPyPIProjectNames type", typeof topPyPIProjectNames);
+        printDebugInfo("topPyPIProjectNames size", topPyPIProjectNames.size);
         
         if (topPyPIProjectNames.has(firstToken)) {
             // Add all tokens in the module no matter what
