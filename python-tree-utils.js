@@ -99,12 +99,36 @@ function getAllNodes(tree) {
   return result;
 }
 
-module.exports = {
-  findAllKeywordsInTree,
-  findAllKeywordsInQuery,
-  getAllNodes
+// Returns a SyntaxNode based on equality of its text attribute
+function findNodeByText(tree, searchText) {
+    let visitedChildren = false;
+    let cursor = tree.walk();
+    while (true) {
+        if (!visitedChildren) {
+            // result.push(cursor.currentNode);
+            // Check if text of current node is equal to searchText
+            if (cursor.currentNode.text === searchText) {
+                return cursor.currentNode;
+            }
+            if (!cursor.gotoFirstChild()) {
+                visitedChildren = true;
+            }
+        } else if (cursor.gotoNextSibling()) {
+            visitedChildren = false;
+        } else if (!cursor.gotoParent()) {
+            break;
+        }
+    }
+    return null;
 }
 
+
+module.exports = {
+    getAllNodes,
+    findNodeByText,
+    findAllKeywordsInTree,
+    findAllKeywordsInQuery,
+}
 
 
 // Interface of SyntaxNode:
