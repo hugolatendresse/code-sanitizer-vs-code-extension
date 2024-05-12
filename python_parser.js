@@ -63,9 +63,9 @@ function processImports(importData, topPyPIProjectNames, debug=false) {
         const firstToken = entry.module.split('.')[0];
 
         //Print the type of topPyPIProjectNames
-        printDebugInfo("topPyPIProjectNames", topPyPIProjectNames);
-        printDebugInfo("topPyPIProjectNames type", typeof topPyPIProjectNames);
-        printDebugInfo("topPyPIProjectNames size", topPyPIProjectNames.size);
+        // printDebugInfo("process Imports topPyPIProjectNames", topPyPIProjectNames);
+        // printDebugInfo("process Imports topPyPIProjectNames type", typeof topPyPIProjectNames);
+        // printDebugInfo("process Imports topPyPIProjectNames size", topPyPIProjectNames.size);
         
         if (topPyPIProjectNames.has(firstToken)) {
             // Add all tokens in the module no matter what
@@ -92,7 +92,6 @@ function processImports(importData, topPyPIProjectNames, debug=false) {
         }
     });
 
-    console.log("results from processImports",results);
     return Array.from(results);
 }
 
