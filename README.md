@@ -6,7 +6,7 @@ For example, when using SQL, words like SELECT and FROM will stay the same, but 
 
 This allows pasting code into tools like ChatGPT or public forums, without sharing potentially sensitive details.
 
-/* Only supports SQL and Python for now. R will be added next. */
+/* Only supports Python and SQL for now. R will be added next. */
 
 
 ### Step 1
