@@ -1,0 +1,20 @@
+SELECT
+    INFO.EmployeeID,
+    DEPT.DepartmentName,
+    POS.PositionTitle,
+    COUNT(PROJ.ProjectID) AS NumberOfProjects,
+    SUM(TS.Hours) AS TotalHours
+FROM
+    Employees AS INFO
+LEFT JOIN
+    Departments AS DEPT ON INFO.DepartmentID = DEPT.DepartmentID AND DEPT.DepartmentName IN ('IT', 'Finance', 'Marketing')
+LEFT JOIN
+    ProjectAssignments AS pa ON INFO.EmployeeID = pa.EmployeeID
+LEFT JOIN
+    Projects AS PROJ ON pa.ProjectID = PROJ.ProjectID
+LEFT JOIN
+    TimeSheets AS TS ON PROJ.ProjectID = TS.ProjectID
+LEFT JOIN
+    Positions AS POS ON INFO.PositionID = POS.PositionID
+GROUP BY
+    INFO.EmployeeID, DEPT.DepartmentName, POS.PositionTitle;
