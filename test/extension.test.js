@@ -3,9 +3,9 @@
 
 const vscode = require('vscode');
 const assert = require('assert');
-const parsePythonScript = require('../python_parser');
-const topPyPIProjectNames = new Set(require('../top-pypi-project-names-all'));
-const {printDebugInfo, assertAllTokensDifferent, assertSomeTokensSame, assertSetsEqual} = require('../utils');
+const parsePythonScript = require('../src/python_parser');
+const topPyPIProjectNames = new Set(require('../assets/top-pypi-project-names-all'));
+const {printDebugInfo, assertAllTokensDifferent, assertSomeTokensSame, assertSetsEqual} = require('../src/utils-testing');
 
 suite('Extension Test Suite', () => {
 

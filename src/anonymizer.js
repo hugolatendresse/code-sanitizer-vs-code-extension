@@ -1,7 +1,7 @@
 const parsePythonScript = require('./python_parser');
-const { sqlReservedWordsUpper, pythonReservedWordsUpper } = require('./reserved_words');
-const shortWords = require('./shorter_word_list');
-const topPyPIProjectNames = require('./top-pypi-project-names-mini'); // TODO link to full thing!!!
+const { sqlReservedWordsUpper, pythonReservedWordsUpper } = require('../assets/reserved_words');
+const shortWords = require('../assets/dictionary_words');
+const topPyPIProjectNames = require('../assets/top-pypi-project-names-mini'); // TODO link to full thing!!!
 
 const debug = false;
 
@@ -29,7 +29,7 @@ class Anonymizer {
         this.sqlReservedWordsUpper = new Set(sqlReservedWordsUpper);
         this.pythonReservedWordsUpper = new Set(pythonReservedWordsUpper);
         this.updateReservedWordsUpper();
-        this.topPyPIProjectNames = new Set(require('./top-pypi-project-names-all'));
+        this.topPyPIProjectNames = new Set(require('../assets/top-pypi-project-names-all'));
         // printDebugInfo("constructor topPyPIProjectNames", this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames type", typeof this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames size", this.topPyPIProjectNames.size);

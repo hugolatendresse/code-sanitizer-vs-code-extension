@@ -1,5 +1,5 @@
 // docs for tree-sitter: https://tree-sitter.github.io/tree-sitter/using-parsers
-const {getAllNodes, findNodeByText, findAllKeywordsInTree, findAllKeywordsInQuery} = require("./python-tree-utils");
+const {getAllNodes, findNodeByText, findAllKeywordsInTree, findAllKeywordsInQuery} = require("./utils-python");
 const Anonymizer = require("./anonymizer");
 const Parser = require("tree-sitter");
 const Python = require("tree-sitter-python");

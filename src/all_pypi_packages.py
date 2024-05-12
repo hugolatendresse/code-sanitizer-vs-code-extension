@@ -11,7 +11,7 @@ import sys
 project_names.extend(list(sys.stdlib_module_names))
 
 # Save to json
-with open("top-pypi-project-names.json", "w") as f:
+with open("top-pypi-project-names-all.json", "w") as f:
     json.dump(project_names, f)
 
 print('done')
