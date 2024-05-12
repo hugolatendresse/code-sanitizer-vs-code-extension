@@ -1,6 +1,5 @@
 // docs for tree-sitter: https://tree-sitter.github.io/tree-sitter/using-parsers
-
-const {findAllKeywordsInTree, findAllKeywordsInQuery, getAllNodes} = require("./python-tree-utils");
+const {getAllNodes, findNodeByText, findAllKeywordsInTree, findAllKeywordsInQuery} = require("./utils-python");
 const Anonymizer = require("./anonymizer");
 const Parser = require("tree-sitter");
 const Python = require("tree-sitter-python");
@@ -91,27 +90,6 @@ allNodeTexts.forEach(nodeText => {
     console.log(nodeText);
 });
 
-function findNodeByText(tree, searchText) {
-    let visitedChildren = false;
-    let cursor = tree.walk();
-    while (true) {
-        if (!visitedChildren) {
-            // result.push(cursor.currentNode);
-            // Check if text of current node is equal to searchText
-            if (cursor.currentNode.text === searchText) {
-                return cursor.currentNode;
-            }
-            if (!cursor.gotoFirstChild()) {
-                visitedChildren = true;
-            }
-        } else if (cursor.gotoNextSibling()) {
-            visitedChildren = false;
-        } else if (!cursor.gotoParent()) {
-            break;
-        }
-    }
-    return null;
-}
 
 
 let x = findNodeByText(tree, 'keyword11');

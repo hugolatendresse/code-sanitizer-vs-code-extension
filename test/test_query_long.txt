@@ -1,0 +1,33 @@
+SELECT
+    info.EmployeeID,
+    info.FirstName,
+    info.LastName,
+    dept.DepartmentName,
+    pos.PositionTitle,
+    COUNT(proj.ProjectID) AS NumberOfProjects,
+    SUM(ts.Hours) AS TotalHours,
+    AVG(ts.Hours) AS AverageHoursPerProject,
+    MAX(ts.Date) AS LastProjectDate
+FROM
+    Employees info
+JOIN
+    Departments dept ON info.DepartmentID = dept.DepartmentID
+JOIN
+    Positions pos ON info.PositionID = pos.PositionID
+LEFT JOIN
+    ProjectAssignments pa ON info.EmployeeID = pa.EmployeeID
+LEFT JOIN
+    Projects proj ON pa.ProjectID = proj.ProjectID
+LEFT JOIN
+    TimeSheets ts ON proj.ProjectID = ts.ProjectID
+WHERE
+    dept.DepartmentName IN ('IT', 'Finance', 'Marketing')
+    AND info.StartDate BETWEEN '2020-01-01' AND '2023-01-01'
+    AND ts.Date >= DATE_SUB(CURRENT_DATE, INTERVAL 1 YEAR)
+GROUP BY
+    info.EmployeeID, dept.DepartmentName, pos.PositionTitle
+HAVING
+    TotalHours > 100
+ORDER BY
+    TotalHours DESC, LastName ASC
+LIMIT 10;

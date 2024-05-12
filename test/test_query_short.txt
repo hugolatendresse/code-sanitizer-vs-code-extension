@@ -1,0 +1,9 @@
+SELECT
+    INFO.EmployeeID,
+    SUM(DEPT.Hours) AS TotalHours,
+FROM
+    Employees AS INFO
+LEFT JOIN
+    Departments DEPT ON INFO.EmployeeID = DEPT.EmployeeID
+WHERE
+    DEPT.DepartmentName IN ('IT', 'Finance', 'Marketing');
