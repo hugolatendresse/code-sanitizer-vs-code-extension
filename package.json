@@ -72,6 +72,8 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "tree-sitter": "^0.21.1",
+    "tree-sitter-python": "^0.21.0",
     "vscode": "^1.1.34"
   }
 }

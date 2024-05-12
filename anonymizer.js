@@ -1,4 +1,5 @@
-const sqlReservedWordsUpper = require('./reserved_words');
+const parsePythonScript = require('./python_parser');
+const { sqlReservedWordsUpper, pythonReservedWordsUpper } = require('./reserved_words');
 const shortWords = require('./shorter_word_list');
 
 const debug = false;
@@ -13,6 +14,7 @@ function printDebugInfo(someName, someVar, debug) {
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 }
 
+
 class Anonymizer {
     constructor(tokenMode = 'dictionary') {
         this.mapping = {}; // Dictionary from original tokens to sanitized tokens
@@ -24,6 +26,9 @@ class Anonymizer {
             // this.wordList = JSON.parse(rawData);
             this.shuffleArray(this.wordList);
         }
+        this.sqlReservedWordsUpper = new Set(sqlReservedWordsUpper);
+        this.pythonReservedWordsUpper = new Set(pythonReservedWordsUpper);
+        this.updateReservedWordsUpper();
     }
 
     generateRandomString(length = 8) {
@@ -45,15 +50,20 @@ class Anonymizer {
         }
     }
 
+    updateReservedWordsUpper() {
+        this.reservedWordsUpper =  new Set([...this.sqlReservedWordsUpper, ...this.pythonReservedWordsUpper]);
+    }
+
     anonymize(query) {
         const tokens = query.match(/\b\w+\b/g);
         tokens.forEach(token => {
             const upperToken = token.toUpperCase();
-            // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
-            if (!sqlReservedWordsUpper.includes(upperToken)) {
+            if (!this.reservedWordsUpper.has(upperToken)) {
+                // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
                 if (!this.mapping.hasOwnProperty(token)) {
                     this.mapping[token] = this.generateRandomString();
                 }
+                // Replace the token with the sanitized token
                 query = this.replaceInString(token, this.mapping[token], query);
             }
         });
@@ -87,6 +97,14 @@ class Anonymizer {
             [array[i], array[j]] = [array[j], array[i]]; // Swap elements
         }
     }
+
+    read_entire_python_script(allText) {
+        let wordsFromPythonScript = parsePythonScript(allText);
+        let pythonWordsUpper = wordsFromPythonScript.map(word => word.toUpperCase());
+        this.pythonReservedWordsUpper = new Set([...this.pythonReservedWordsUpper, ...pythonWordsUpper]);
+        this.updateReservedWordsUpper();
+    }
 }
 
 module.exports = Anonymizer;
+ 
