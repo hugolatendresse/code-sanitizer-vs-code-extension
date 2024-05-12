@@ -1,22 +1,42 @@
-// const Parser = require('tree-sitter');
-// const Python = require('tree-sitter-python');
-//
-// const parser = new Parser();
-// parser.setLanguage(Python);
-
-
 const {Tree, Point, TreeCursor} = require("tree-sitter");
-
-
-
-// Define a function to check, given a node, if it has 3 children, the right one is an identifer, and the middle one is a dot
-function isParentOfCall(node) {
-    let out = node.children.length === 3 && node.children[1].text === '.' && node.children[2].type === 'identifier'
-    return out
-}
-
 const Parser = require('tree-sitter');
 const Python = require('tree-sitter-python');
+
+
+/*
+Looking for `caller.callee` pattern
+Check if nodes has 3 children, the right one is an identifer, and the middle one is a dot
+*/
+function isParentOfCall(node, keyWords) {
+    try {
+        let callCondition = node.children.length === 3 && node.children[1].text === '.' && node.children[2].type === 'identifier';
+        const firstIdentifier = node.children[0].text;
+        let libraryCond = keyWords.some(keyword => firstIdentifier.startsWith(keyword));
+        return callCondition && libraryCond;
+    } catch (error) {
+        return false;
+    }
+}
+
+/*
+Looking for `library...method(..., keyword1=sanitize1, ...)` pattern
+This function allowing finding keywords in methods that belong to a library
+nodes of type 'keyword_argument' have text such as 'keyword6=sanitize1'. call it y
+the child of y contianing "keyword6" will have type identifier, call it x
+y.parent is just an argument_list (can't conclude anything from the other arguments)
+z=y.parent.parent is of type call and the left part can be checked for being a keyword!
+Will the left part of z ALWAYS be a library name? Yes! I checked
+*/
+function isKeywordArgumentOfMethodFromLibrary(node, keyWords) {
+    try {
+        let libraryCond = keyWords.some(keyword => node.parent.parent.text.startsWith(keyword));
+        let keywordCond = node.type === 'keyword_argument' && node.children[0].type === 'identifier' && node.parent.parent.type === 'call';
+        return libraryCond && keywordCond;
+    } catch (error) {
+        return false;
+    }
+}
+
 
 
 function findAllKeywordsInQuery(query, keyWords) {
@@ -34,15 +54,19 @@ function findAllKeywordsInTree(tree, keyWords) {
     let cursor = tree.walk();
     while (true) {
         if (!visitedChildren) {
-            // result.push(cursor.currentNode);
-            if (isParentOfCall(cursor.currentNode)) {
-                const firstIdentifier = cursor.currentNode.children[0].text;
-                // Check if first identifier is a keyword, that is, if it's in the following list ["pd", "np", "os", "plt", "deepcopy"]
-                if (keyWords.some(keyword => firstIdentifier.startsWith(keyword))) {
-                    const secondIdentifier = cursor.currentNode.children[2].text;
-                    result.push(secondIdentifier);
-                }
+
+            // Add different types of keywords
+            if (isParentOfCall(cursor.currentNode, keyWords)) {
+                // Add method calls following a '.'
+                const secondIdentifier = cursor.currentNode.children[2].text;
+                result.push(secondIdentifier);
+            } else if (isKeywordArgumentOfMethodFromLibrary(cursor.currentNode, keyWords)) {
+                // Add keywords of arguments in function calls
+                const keyword = cursor.currentNode.children[0].text;
+                result.push(keyword);
             }
+
+            // Continue walking the tree
             if (!cursor.gotoFirstChild()) {
                 visitedChildren = true;
             }
@@ -54,8 +78,6 @@ function findAllKeywordsInTree(tree, keyWords) {
     }
     return result;
 }
-
-
 
 
 function getAllNodes(tree) {
@@ -78,6 +100,7 @@ function getAllNodes(tree) {
 }
 
 module.exports = {
+  findAllKeywordsInTree,
   findAllKeywordsInQuery,
   getAllNodes
 }

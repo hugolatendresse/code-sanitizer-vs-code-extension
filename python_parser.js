@@ -1,10 +1,10 @@
-// TODO just create a huge dict of EVERY token in the script. Each token has its own dict that says what type of stuff it is. I can then easily look at
+// TODO still need to sanitize what comes from custom libraries. Need a full list of all pipy librairies!
+
+
 // two tokens before to see if it's "import", for example
 const assert = require('assert');
-const {findAllKeywordsInQuery} = require("./python-tree-utils");
+const {findAllKeywordsInTree, findAllKeywordsInQuery, getAllNodes} = require("./python-tree-utils");
 const debug = false;
-
-// TODO consider the order of the replacmeent. What happens if a word is part of another word or stuff like that? 
 
 // TODO: need to catch if import * is used and say that's not supported right now
 
@@ -12,9 +12,7 @@ const debug = false;
 
 // TODO: 'axis'=0 in pandas call need to be preserved too!!!. I can maybe only sanitize strings within function calls?? idk
 
-// TODO need to catch stillincluded6 (see test script)
-
-// TODO handle numbers better? I could just not replace them, or replace by other numbers, OR replace by num1, num2, etc 
+// TODO handle numbers better? I could just not replace them, or replace by other numbers, OR replace by num1, num2, etc
 
 function getImports(script) {
 
