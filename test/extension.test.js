@@ -1,12 +1,10 @@
 // to run: npm test
 
+
 const vscode = require('vscode');
 const assert = require('assert');
 const parsePythonScript = require('../python_parser');
-// function printDebugInfo = require('../utils')
-// function assertAllTokensDifferent = require('../utils')
-// function assertSomeTokensSame = require('../utils')
-// function assertSetsEqual = require('../utils')
+const topPyPIProjectNames = new Set(require('../top-pypi-project-names-all'));
 const {printDebugInfo, assertAllTokensDifferent, assertSomeTokensSame, assertSetsEqual} = require('../utils');
 
 suite('Extension Test Suite', () => {
@@ -242,16 +240,16 @@ suite('Extension Test Suite', () => {
 
         // Copy half of text in the editor such that clipboard contains 7 lines of sanitized text
         // Print all text in editor
-        printDebugInfo("document.getText() line 274 (expected 10 lines of sanitized text)", document.getText());
+        // printDebugInfo("document.getText() line 274 (expected 10 lines of sanitized text)", document.getText());
         let halfLines = 7;
         editor.selection = new vscode.Selection(0, 0, halfLines, 0);
         await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
         await new Promise(resolve => setTimeout(resolve, 100));
 
         // Assert that every token in selection is different from the original text, except for SQL words
-        printDebugInfo("originalText line 280, expect 10 lines of unsanitized text", originalText);
+        // printDebugInfo("originalText line 280, expect 10 lines of unsanitized text", originalText);
         const clipboardText = await vscode.env.clipboard.readText();
-        printDebugInfo("vscode.env.clipboard.readText() line 282 (expect 7 lines of sanitized text)", clipboardText);
+        // printDebugInfo("vscode.env.clipboard.readText() line 282 (expect 7 lines of sanitized text)", clipboardText);
         assertSomeTokensSame(originalText, clipboardText, sameExpectedTokens);  // this line randomly fails!!
 
         // Replace all text in the editor with "hello world"
@@ -322,8 +320,7 @@ suite('Python Parser Test Suite', () => {
             "stillincluded6",
             "axis",
         ];
-
-        const parsePythonScript_out = parsePythonScript(pythonScript, false);
+        const parsePythonScript_out = parsePythonScript(pythonScript, topPyPIProjectNames,false);
         assertSetsEqual(parsePythonScript_out, expectedFinalanser, 'final does not equal expectedFinalanser'); // Only Difference: stillincluded6
     });
 
