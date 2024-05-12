@@ -1,5 +1,7 @@
 # Change Log
 
+### 0.2.0
+- Now supports Python
 
 ### 0.1.9
 - Removed dirty words from dictionary
