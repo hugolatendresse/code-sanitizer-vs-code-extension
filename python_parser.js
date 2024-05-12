@@ -14,6 +14,7 @@ const debug = false;
 
 // TODO handle numbers better? I could just not replace them, or replace by other numbers, OR replace by num1, num2, etc
 
+// Returns a dictionary describing the imports and modules used in the Python script.
 function getImports(script, topPyPIProjectNames) {
 
     // TODO need to refactor this since it won't be able to handle imports over multiple lines (with a \)
@@ -40,6 +41,7 @@ function getImports(script, topPyPIProjectNames) {
     return imports;
 }
 
+// Allows adding individual tokens to the results set
 function addEachTokenToResults(results, text) {
     const moduleTokens = text.match(/\b\w+\b/g);
     moduleTokens.forEach(token => {
@@ -47,35 +49,41 @@ function addEachTokenToResults(results, text) {
     });
 }
 
+// Adds everything that needs to be added to the list of keywords from the dictionary of imports 
 function processImports(importData, topPyPIProjectNames, debug=false) {
     const results = new Set();
 
     if (debug) {
-        console.log("importData (input of processImports)",importData);
+        console.log("importData (input of processImports)", importData);
     }
 
     importData.forEach(entry => {
-        // Add all tokens in the module no matter what
-        addEachTokenToResults(results, entry.module);
+        // Only include if the module is a PyPI project. Need to look at first token in entry.module
+        const firstToken = entry.module.split('.')[0];
+        
+        if (topPyPIProjectNames.has(firstToken)) {
+            // Add all tokens in the module no matter what
+            addEachTokenToResults(results, entry.module);
 
-        // Add the library nickname if it exists
-        if (entry.libraryNickName) {
-            results.add(entry.libraryNickName);
-        }
-
-        // Process each imported item
-        // TODO important items can probably have dots in them, so need to split on dots and add each part
-        entry.importedItems.forEach(item => {
-            if (item.includes(' as ')) {
-                // For aliasing, add only the alias name
-                const [originalName, aliasName] = item.split(' as ');
-                addEachTokenToResults(results, originalName.trim());
-                addEachTokenToResults(results, aliasName.trim());
-            } else {
-                // For simple imports, add only the name of the imported item
-                addEachTokenToResults(results, item.trim());
+            // Add the library nickname if it exists
+            if (entry.libraryNickName) {
+                results.add(entry.libraryNickName);
             }
-        });
+
+            // Process each imported item
+            // TODO important items can probably have dots in them, so need to split on dots and add each part
+            entry.importedItems.forEach(item => {
+                if (item.includes(' as ')) {
+                    // For aliasing, add only the alias name
+                    const [originalName, aliasName] = item.split(' as ');
+                    addEachTokenToResults(results, originalName.trim());
+                    addEachTokenToResults(results, aliasName.trim());
+                } else {
+                    // For simple imports, add only the name of the imported item
+                    addEachTokenToResults(results, item.trim());
+                }
+            });
+        }
     });
 
     console.log("results from processImports",results);
