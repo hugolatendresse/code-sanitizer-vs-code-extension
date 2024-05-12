@@ -98,8 +98,16 @@ class Anonymizer {
         }
     }
 
+    // Fetch the top PyPI project names if haven't been done yet, and return them
+    get topPyPIProjectNames() {
+        if (!this._topPyPIProjectNames) {
+            this._topPyPIProjectNames = require('./top-pypi-project-names');
+        }
+        return this._topPyPIProjectNames;
+    }
+
     read_entire_python_script(allText) {
-        let wordsFromPythonScript = parsePythonScript(allText);
+        let wordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);
         let pythonWordsUpper = wordsFromPythonScript.map(word => word.toUpperCase());
         this.pythonReservedWordsUpper = new Set([...this.pythonReservedWordsUpper, ...pythonWordsUpper]);
         this.updateReservedWordsUpper();
