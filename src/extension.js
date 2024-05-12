@@ -1,5 +1,5 @@
 const vscode = require('vscode');
-const Anonymizer = require('./anonymizer');
+const Anonymizer = require('../anonymizer');
 const path = require('path');
 
 let anonymizer = new Anonymizer();
