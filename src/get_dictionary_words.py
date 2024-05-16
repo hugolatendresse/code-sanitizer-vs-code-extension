@@ -15,10 +15,10 @@ s2 = df.loc[df['count'] < max_freq, "word"]
 s3 = s2[(s2.str.len() <= 6) & (s2.str.len() >= 4)]
 s4 = s3[:word_count]
 
-forbiden_words = ['fuck', 'bitch', 'penis', 'cunt', 'whore', 'hoe', 'idiot', 'morons', 'moron', 'nigger', 'nigga',
+forbidden_words = ['fuck', 'bitch', 'penis', 'cunt', 'whore', 'hoe', 'idiot', 'morons', 'moron', 'nigger', 'nigga',
                   'vulva', 'vagina', 'boobs', 'ass', 'boob', 'fanboy', 'anger', 'jpeg', 'acct']
 
-s5 = s4.loc[~s4.isin(forbiden_words)]
+s5 = s4.loc[~s4.isin(forbidden_words)]
 word_list = s5.values.tolist()
 
 with open(os.path.join(assets_path, 'reserved_words_python.json'), 'r') as f:
