@@ -1,5 +1,8 @@
 # Change Log
 
+### 0.2.4
+- Not sanitizing single digits and letters
+
 ### 0.2.3
 - Images in README
 
