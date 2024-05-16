@@ -1,8 +1,0 @@
-Python packages are considered public (and therefore are not sanitized) if they are in this list of the 8000 most downloaded
-packages in April 2024 https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.min.json
-
-To publish: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#publishing-extensions
-vsce package
-vsce publish
-
-Make sure all images are on dev on the github

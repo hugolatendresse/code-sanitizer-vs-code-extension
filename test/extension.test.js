@@ -1,11 +1,12 @@
 // to run: npm test
 
 
-const vscode = require('vscode');
-const assert = require('assert');
 const parsePythonScript = require('../src/python_parser');
 const topPyPIProjectNames = new Set(require('../assets/top-pypi-project-names-all'));
 const {printDebugInfo, assertAllTokensDifferent, assertSomeTokensSame, assertSetsEqual} = require('../src/utils-testing');
+const vscode = require('vscode');
+const assert = require('assert');
+const {originalText} = require("./test_python");
 
 suite('Extension Test Suite', () => {
 
@@ -52,11 +53,6 @@ suite('Extension Test Suite', () => {
             }
         });
     });
-
-
-    // TODO copy back full test
-    // test('Test 02 unanonymizeAndPaste all sanitized', async () => {
-
 
     test('Test 03 unanonymizeAndPaste ultra simple', async () => {
         let doc = await vscode.workspace.openTextDocument({content: ' '});
@@ -202,15 +198,15 @@ suite('Extension Test Suite', () => {
         const originalText = `Wewilltry.amuchlonger pieceoftext tocheck ifthe unanonymize functionworksproperly
 		thisisjust averylong stringwithlotsofwords LEFT JOIN moreoverthere aresomenumbers1234
 		where specialcharacterslike $%&/()=?^* ORDER BY andalsosome! SELECT
-		andthen, itrepeasts twotimes
+		andthen, itrepeasts 2 times
 		Wewilltry.amuchlonger pieceoftext tocheck ifthe unanonymize functionworksproperly
-		thisisjust averylong stringwithlotsofwords LEFT JOIN moreoverthere aresomenumbers1234
+		thisisjust averylong stringwithlotsofwords LEFT JOIN moreoverthere 1
 		where specialcharacterslike $%&/()=?^* andalsosome SELECT
 		Wewilltry.amuchlonger pieceoftext tocheck ifthe unanonymize functionworksproperly
 		thisisjust averylong stringwithlotsofwords LEFT JOIN moreoverthere aresomenumbers1234
 		where specialcharacterslike $%&/()=?^* ORDER BY andalsosome! SELECT
 		andtheend`;
-        const sameExpectedTokens = ["SELECT", "ORDER", "BY", "where", "LEFT", "JOIN"];
+        const sameExpectedTokens = ["SELECT", "ORDER", "BY", "where", "LEFT", "JOIN", "1", "2"];
         await editor.edit(editBuilder => {
             editBuilder.insert(new vscode.Position(0, 0), originalText);
         });
@@ -286,7 +282,7 @@ suite('Extension Test Suite', () => {
 
 suite('Python Parser Test Suite', () => {
 
-    test('Test 00 pythonParser', async () => {
+    test('Test 00 pythonParser (7 lines)', async () => {
         const pythonScript = `
 		import os
 		import numpy as np
@@ -322,6 +318,83 @@ suite('Python Parser Test Suite', () => {
         ];
         const parsePythonScript_out = parsePythonScript(pythonScript, topPyPIProjectNames,false);
         assertSetsEqual(parsePythonScript_out, expectedFinalanser, 'final does not equal expectedFinalanser'); // Only Difference: stillincluded6
+    });
+
+    test('Test 01 pythonparser (100 lines)', async () => {
+        let doc = await vscode.workspace.openTextDocument({content: ' '});
+        let editor = await vscode.window.showTextDocument(doc);
+        let document = editor.document;
+        assert.ok(editor, 'No active editor');
+        const {originalText, sameExpectedTokens}  = require('./test_python')
+        // printDebugInfo(originalText)
+        await editor.edit(editBuilder => {
+            editBuilder.insert(new vscode.Position(0, 0), originalText);
+        });
+
+        // Copy and sanitize
+        const lastLine = document.lineAt(document.lineCount - 1);
+        const range = new vscode.Range(0, 0, document.lineCount - 1, lastLine.text.length);
+        editor.selection = new vscode.Selection(range.start, range.end);
+        await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
+        // printDebugInfo("clipboard check", await vscode.env.clipboard.readText();)
+
+        // Clear the editor
+        await vscode.commands.executeCommand('editor.action.selectAll');
+        await vscode.commands.executeCommand('editor.action.deleteLines');
+
+        // Paste in editor so that editor contains sanitized text
+        await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+
+        // Assert that every token in selection is different from the original text, except for SQL words
+        assertSomeTokensSame(originalText, document.getText(), sameExpectedTokens);
+
+        // Assert that the third line is as before
+        const pastedLines = document.getText().split('\n');
+        assert.strictEqual(pastedLines[2], "import pandas as pd\r");
+
+        // Set clipboard to something random
+        await vscode.env.clipboard.writeText("random text");
+
+        // Copy all text in the editor such that clipboard contains the sanitized text
+        // printDebugInfo("document.getText() line 274 (expected 10 lines of sanitized text)", document.getText());
+        await vscode.commands.executeCommand('editor.action.selectAll');
+        await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Assert that every token in selection is different from the original text, except for SQL words
+        // printDebugInfo("originalText line 280, expect 10 lines of unsanitized text", originalText);
+        const clipboardText = await vscode.env.clipboard.readText();
+        // printDebugInfo("vscode.env.clipboard.readText() line 282 (expect 7 lines of sanitized text)", clipboardText);
+        assertSomeTokensSame(originalText, clipboardText, sameExpectedTokens);  // this line randomly fails!!
+
+        // Replace all text in the editor with "hello world"
+        // const text_before_helloworld = document.getText();
+        // printDebugInfo("text_before_priting_hello_world", text_before_helloworld);
+        await vscode.commands.executeCommand('editor.action.selectAll');
+        await vscode.commands.executeCommand('editor.action.deleteLines');
+        await editor.edit(editBuilder => {
+            // Create a range that covers the entire document
+            let range = new vscode.Range(
+                document.positionAt(0),
+                document.positionAt(document.getText().length)
+            );
+
+            // Replace the range with "hello world"
+            editBuilder.replace(range, "hello world");
+        });
+
+        // Replace all text in the editor with the unsanitized text
+        assertAllTokensDifferent(originalText, document.getText());  // Should have nothing in common with Hello World
+        await vscode.commands.executeCommand('editor.action.selectAll');
+        await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
+
+        // Assert that the finalText is equal to the originalText
+        // Actual will have an extra whitespace character that we just slice out
+        const actual = document.getText().replace(/\r\n/g, '\n').slice(0,-1)
+        const expected = originalText.replace(/\r\n/g, '\n')
+        // printDebugInfo("actual", actual);
+        // printDebugInfo("expected", expected)
+        assert.strictEqual(actual, expected);
     });
 
 });

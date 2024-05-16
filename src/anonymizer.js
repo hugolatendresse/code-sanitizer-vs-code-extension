@@ -1,7 +1,8 @@
 const parsePythonScript = require('./python_parser');
-const { sqlReservedWordsUpper, pythonReservedWordsUpper } = require('../assets/reserved_words');
-const shortWords = require('../assets/dictionary_words');
-const topPyPIProjectNames = require('../assets/top-pypi-project-names-mini'); // TODO link to full thing!!!
+const reservedWordsSQLUpper = require('../assets/reserved_words_sql_upper.json');
+const reservedWordsPython = require('../assets/reserved_words_python.json')
+const dictWords = require('../assets/dict_words.json');
+const topPyPIProjectNames = require('../assets/top-pypi-project-names-all');
 
 const debug = false;
 
@@ -20,16 +21,12 @@ class Anonymizer {
         this.mapping = {}; // Dictionary from original tokens to sanitized tokens
         this.tokenMode = tokenMode; // 'random' for random strings, 'dictionary' for dictionary words
         if (tokenMode === 'dictionary') {
-            this.wordList = shortWords;
-            // TODO the above is not very elegant, would be better to read from json file
-            // let rawData = fs.readFileSync('word_list.json', 'utf8');
-            // this.wordList = JSON.parse(rawData);
-            this.shuffleArray(this.wordList);
+            this.dictWords = dictWords;
+            this.shuffleArray(this.dictWords);
         }
-        this.sqlReservedWordsUpper = new Set(sqlReservedWordsUpper);
-        this.pythonReservedWordsUpper = new Set(pythonReservedWordsUpper);
-        this.updateReservedWordsUpper();
-        this.topPyPIProjectNames = new Set(require('../assets/top-pypi-project-names-all'));
+        this.reservedWordsSQLUpper = new Set(reservedWordsSQLUpper);
+        this.reservedWordsPython = new Set(reservedWordsPython);
+        this.topPyPIProjectNames = new Set(topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames", this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames type", typeof this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames size", this.topPyPIProjectNames.size);
@@ -46,24 +43,24 @@ class Anonymizer {
             }
             return result;
         } else if (this.tokenMode === 'dictionary') {
-            if (!this.wordList.length) {
+            if (!this.dictWords.length) {
                 throw new Error("The word list has been exhausted.");
             }
-            return this.wordList.pop().toLowerCase();
+            let one_dict_word = this.dictWords.pop().toLowerCase();
+            while (this.tokens.includes(one_dict_word)) {
+                one_dict_word = this.dictWords.pop().toLowerCase();
+            }
+            return one_dict_word;
         } else {
             throw new Error(`Unexpected token mode: ${this.tokenMode}`);
         }
     }
 
-    updateReservedWordsUpper() {
-        this.reservedWordsUpper =  new Set([...this.sqlReservedWordsUpper, ...this.pythonReservedWordsUpper]);
-    }
-
     anonymize(query) {
-        const tokens = query.match(/\b\w+\b/g);
-        tokens.forEach(token => {
+        this.tokens = query.match(/\b\w+\b/g);
+        this.tokens.forEach(token => {
             const upperToken = token.toUpperCase();
-            if (!this.reservedWordsUpper.has(upperToken)) {
+            if (!(this.reservedWordsSQLUpper.has(upperToken) || this.reservedWordsPython.has(token))) {
                 // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
                 if (!this.mapping.hasOwnProperty(token)) {
                     this.mapping[token] = this.generateRandomString();
@@ -71,7 +68,7 @@ class Anonymizer {
                 // Replace the token with the sanitized token
                 query = this.replaceInString(token, this.mapping[token], query);
             }
-        });
+          });
         return query;
     }
 
@@ -103,22 +100,9 @@ class Anonymizer {
         }
     }
 
-    // DOING THAT IN CONSTRUCTOR FOR NOW
-    // Fetch the top PyPI project names if haven't been done yet, and return them
-    // get topPyPIProjectNames() {
-    //     return new Promise((resolve, reject) => {
-    //         if (!this._topPyPIProjectNames) {
-    //             this._topPyPIProjectNames = new Set(require('./top-pypi-project-names'));
-    //         }
-    //         resolve(this._topPyPIProjectNames);
-    //     });
-    // }
-
     read_entire_python_script(allText) {
-        let wordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);
-        let pythonWordsUpper = wordsFromPythonScript.map(word => word.toUpperCase());
-        this.pythonReservedWordsUpper = new Set([...this.pythonReservedWordsUpper, ...pythonWordsUpper]);
-        this.updateReservedWordsUpper();
+        let reservedWordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);
+        this.reservedWordsPython = new Set([...this.reservedWordsPython, ...reservedWordsFromPythonScript]);
     }
 }
 
