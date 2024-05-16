@@ -100,17 +100,6 @@ class Anonymizer {
         }
     }
 
-    // DOING THAT IN CONSTRUCTOR FOR NOW
-    // Fetch the top PyPI project names if haven't been done yet, and return them
-    // get topPyPIProjectNames() {
-    //     return new Promise((resolve, reject) => {
-    //         if (!this._topPyPIProjectNames) {
-    //             this._topPyPIProjectNames = new Set(require('./top-pypi-project-names'));
-    //         }
-    //         resolve(this._topPyPIProjectNames);
-    //     });
-    // }
-
     read_entire_python_script(allText) {
         let reservedWordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);
         this.reservedWordsPython = new Set([...this.reservedWordsPython, ...reservedWordsFromPythonScript]);
