@@ -53,11 +53,6 @@ suite('Extension Test Suite', () => {
         });
     });
 
-
-    // TODO copy back full test
-    // test('Test 02 unanonymizeAndPaste all sanitized', async () => {
-
-
     test('Test 03 unanonymizeAndPaste ultra simple', async () => {
         let doc = await vscode.workspace.openTextDocument({content: ' '});
         let editor = await vscode.window.showTextDocument(doc);
@@ -202,15 +197,15 @@ suite('Extension Test Suite', () => {
         const originalText = `Wewilltry.amuchlonger pieceoftext tocheck ifthe unanonymize functionworksproperly
 		thisisjust averylong stringwithlotsofwords LEFT JOIN moreoverthere aresomenumbers1234
 		where specialcharacterslike $%&/()=?^* ORDER BY andalsosome! SELECT
-		andthen, itrepeasts twotimes
+		andthen, itrepeasts 2 times
 		Wewilltry.amuchlonger pieceoftext tocheck ifthe unanonymize functionworksproperly
-		thisisjust averylong stringwithlotsofwords LEFT JOIN moreoverthere aresomenumbers1234
+		thisisjust averylong stringwithlotsofwords LEFT JOIN moreoverthere 1
 		where specialcharacterslike $%&/()=?^* andalsosome SELECT
 		Wewilltry.amuchlonger pieceoftext tocheck ifthe unanonymize functionworksproperly
 		thisisjust averylong stringwithlotsofwords LEFT JOIN moreoverthere aresomenumbers1234
 		where specialcharacterslike $%&/()=?^* ORDER BY andalsosome! SELECT
 		andtheend`;
-        const sameExpectedTokens = ["SELECT", "ORDER", "BY", "where", "LEFT", "JOIN"];
+        const sameExpectedTokens = ["SELECT", "ORDER", "BY", "where", "LEFT", "JOIN", "1", "2"];
         await editor.edit(editBuilder => {
             editBuilder.insert(new vscode.Position(0, 0), originalText);
         });
