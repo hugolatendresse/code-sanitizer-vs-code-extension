@@ -392,8 +392,8 @@ suite('Python Parser Test Suite', () => {
         // Actual will have an extra whitespace character that we just slice out
         const actual = document.getText().replace(/\r\n/g, '\n').slice(0,-1)
         const expected = originalText.replace(/\r\n/g, '\n')
-        printDebugInfo("actual", actual);
-        printDebugInfo("expected", expected)
+        // printDebugInfo("actual", actual);
+        // printDebugInfo("expected", expected)
         assert.strictEqual(actual, expected);
     });
 
