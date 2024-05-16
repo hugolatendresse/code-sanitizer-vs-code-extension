@@ -69,5 +69,8 @@
     "__len__",
     "__await__",
     "__aiter__", "__anext__",
-    "__aenter__", "__aexit__"
+    "__aenter__", "__aexit__",
+    "apply", "argsort", "axis", "columns", "cosine_similarities", "data", "dot", "dot_products", "dropna",
+    "fit_transform", "get_feature_names_out", "inplace", "iterrows", "items", "keys", "values", "key", "value", "main",
+    "metrics", "query_vector", "reshape", "skipna", "subset", "tfidf_vectorizer", "toarray", "transform"
 ]

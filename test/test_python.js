@@ -1,4 +1,4 @@
-from sklearn.metrics.pairwise import linear_kernel, cosine_similarity, euclidean_distances
+const originalText = `from sklearn.metrics.pairwise import linear_kernel, cosine_similarity, euclidean_distances
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import euclidean
@@ -97,4 +97,86 @@ if __name__ == "__main__":
     query = 'slip and fall'  # Binary tf is the best!
     tfidf_with_reg_tf(query, notes=notes1)
     tfidf_with_binary_tf(query, notes1)
-    tfidf_with_sublinear_tf(query=query, notes=notes1)
+    tfidf_with_sublinear_tf(query=query, notes=notes1)`
+
+
+const sameExpectedTokens = [
+    "from",
+"sklearn",
+"metrics",
+"pairwise",
+"import",
+"linear_kernel",
+"cosine_similarity",
+"euclidean_distances",
+"numpy",
+"np",
+"pandas",
+"pd",
+"scipy",
+"spatial",
+"distance",
+"euclidean",
+"feature_extraction",
+"text",
+"TfidfVectorizer",
+"main",
+"and",
+"on",
+"data",
+"read_excel",
+"for",
+"in",
+"iterrows",
+"isinstance",
+"dropna",
+"subset",
+"axis",
+"inplace",
+"values",
+"def",
+"stop_words",
+"fit_transform",
+"tfidf_vectorizer",
+"get_feature_names_out",
+"query_vector",
+"transform",
+"cosine_similarities",
+"reshape",
+"flatten",
+"argsort",
+"print",
+"norm",
+"binary",
+"dot",
+"toarray",
+"flatten",
+"dot_products",
+"argsort",
+"sublinear_tf",
+"1",
+"get_feature_names_out",
+"reshape",
+"T",
+"sum",
+"drop",
+"columns",
+"inplace",
+"apply",
+"lambda",
+"sum",
+"skipna",
+"__name__",
+"__main__",
+    "0",
+     "10",
+    "Create","For","I","In","None","Then","True","a","add","all","any","as","break","case","column","complex",
+    "cosine_similarities","filter","from","function","group","if","into", "index","is","key","map","metrics","not","of",
+    "query_vector","return","s","some","str","t","to","try","use","value","with","x"
+
+]
+
+module.exports = {
+    originalText,
+    sameExpectedTokens
+};
