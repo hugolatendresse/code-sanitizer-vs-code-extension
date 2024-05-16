@@ -21,6 +21,11 @@ forbiden_words = ['fuck', 'bitch', 'penis', 'cunt', 'whore', 'hoe', 'idiot', 'mo
 s5 = s4.loc[~s4.isin(forbiden_words)]
 word_list = s5.values.tolist()
 
+# TODO compare with sqlreserved words
+# TODO compare with py words
+with open(os.path.join(assets_path, 'reserved_words_python.json'), 'r') as f:
+    reserved_words_python = json.load(f)
+
 with open(os.path.join(assets_path, 'dict_words.json'), 'w') as f:
     json.dump(word_list, f)
 

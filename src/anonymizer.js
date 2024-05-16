@@ -1,6 +1,7 @@
 const parsePythonScript = require('./python_parser');
-const { sqlReservedWordsUpper, pythonReservedWordsUpper } = require('../assets/reserved_words');
-const wordList = require('../assets/dict_words.json');
+const reservedWordsSQLUpper = require('../assets/reserved_words_sql_upper.json');
+const reservedWordsUpperPython = require('../assets/reserved_words_python.json')
+const dictWords = require('../assets/dict_words.json');
 const topPyPIProjectNames = require('../assets/top-pypi-project-names-all');
 
 const debug = false;
@@ -20,14 +21,11 @@ class Anonymizer {
         this.mapping = {}; // Dictionary from original tokens to sanitized tokens
         this.tokenMode = tokenMode; // 'random' for random strings, 'dictionary' for dictionary words
         if (tokenMode === 'dictionary') {
-            this.wordList = wordList;
-            // TODO the above is not very elegant, would be better to read from json file
-            // let rawData = fs.readFileSync('word_list.json', 'utf8');
-            // this.wordList = JSON.parse(rawData);
-            this.shuffleArray(this.wordList);
+            this.dictWords = dictWords;
+            this.shuffleArray(this.dictWords);
         }
-        this.sqlReservedWordsUpper = new Set(sqlReservedWordsUpper);
-        this.pythonReservedWordsUpper = new Set(pythonReservedWordsUpper);
+        this.reservedWordsSQLUpper = new Set(reservedWordsSQLUpper);
+        this.reservedWordsPython = new Set(reservedWordsUpperPython);
         this.updateReservedWordsUpper();
         this.topPyPIProjectNames = new Set(topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames", this.topPyPIProjectNames);
@@ -46,12 +44,12 @@ class Anonymizer {
             }
             return result;
         } else if (this.tokenMode === 'dictionary') {
-            if (!this.wordList.length) {
+            if (!this.dictWords.length) {
                 throw new Error("The word list has been exhausted.");
             }
-            let one_dict_word = this.wordList.pop().toLowerCase();
+            let one_dict_word = this.dictWords.pop().toLowerCase();
             while (this.tokens.includes(one_dict_word)) {
-                one_dict_word = this.wordList.pop().toLowerCase();
+                one_dict_word = this.dictWords.pop().toLowerCase();
             }
             return one_dict_word;
         } else {
@@ -59,15 +57,11 @@ class Anonymizer {
         }
     }
 
-    updateReservedWordsUpper() {
-        this.reservedWordsUpper =  new Set([...this.sqlReservedWordsUpper, ...this.pythonReservedWordsUpper]);
-    }
-
     anonymize(query) {
         this.tokens = query.match(/\b\w+\b/g);
         this.tokens.forEach(token => {
             const upperToken = token.toUpperCase();
-            if (!this.reservedWordsUpper.has(upperToken)) {  // TODO check if token was changed inplace
+            if (!(this.reservedWordsSQLUpper.has(upperToken) || this.reservedWordsPython.has(token))) {
                 // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
                 if (!this.mapping.hasOwnProperty(token)) {
                     this.mapping[token] = this.generateRandomString();
@@ -121,7 +115,7 @@ class Anonymizer {
     read_entire_python_script(allText) {
         let wordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);
         let pythonWordsUpper = wordsFromPythonScript.map(word => word.toUpperCase());
-        this.pythonReservedWordsUpper = new Set([...this.pythonReservedWordsUpper, ...pythonWordsUpper]);
+        this.reservedWordsUpperPython = new Set([...this.reservedWordsUpperPython, ...pythonWordsUpper]);
         this.updateReservedWordsUpper();
     }
 }
