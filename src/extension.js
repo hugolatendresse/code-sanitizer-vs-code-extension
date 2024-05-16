@@ -1,12 +1,9 @@
 const vscode = require('vscode');
 const Anonymizer = require('./anonymizer');
-const path = require('path');
 
 let anonymizer = new Anonymizer();
 
 function activate(context) {
-
-	// console.log('Extension "code-sanitizer" is now active!');
 
     let disposable = vscode.commands.registerCommand('code-sanitizer.anonymizeAndCopy', function () {
         const editor = vscode.window.activeTextEditor;
@@ -45,7 +42,7 @@ function activate(context) {
     context.subscriptions.push(disposableUnanonymizeAndPaste);
 }
 
-// This method is called when your extension is deactivated
+// This method is called when the extension is deactivated
 function deactivate() {}
 
 module.exports = {

@@ -1,6 +1,6 @@
 const parsePythonScript = require('./python_parser');
 const reservedWordsSQLUpper = require('../assets/reserved_words_sql_upper.json');
-const reservedWordsUpperPython = require('../assets/reserved_words_python.json')
+const reservedWordsPython = require('../assets/reserved_words_python.json')
 const dictWords = require('../assets/dict_words.json');
 const topPyPIProjectNames = require('../assets/top-pypi-project-names-all');
 
@@ -25,8 +25,7 @@ class Anonymizer {
             this.shuffleArray(this.dictWords);
         }
         this.reservedWordsSQLUpper = new Set(reservedWordsSQLUpper);
-        this.reservedWordsPython = new Set(reservedWordsUpperPython);
-        this.updateReservedWordsUpper();
+        this.reservedWordsPython = new Set(reservedWordsPython);
         this.topPyPIProjectNames = new Set(topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames", this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames type", typeof this.topPyPIProjectNames);
@@ -113,10 +112,8 @@ class Anonymizer {
     // }
 
     read_entire_python_script(allText) {
-        let wordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);
-        let pythonWordsUpper = wordsFromPythonScript.map(word => word.toUpperCase());
-        this.reservedWordsUpperPython = new Set([...this.reservedWordsUpperPython, ...pythonWordsUpper]);
-        this.updateReservedWordsUpper();
+        let reservedWordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);
+        this.reservedWordsPython = new Set([...this.reservedWordsPython, ...reservedWordsFromPythonScript]);
     }
 }
 
