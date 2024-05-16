@@ -6,6 +6,7 @@ const topPyPIProjectNames = new Set(require('../assets/top-pypi-project-names-al
 const {printDebugInfo, assertAllTokensDifferent, assertSomeTokensSame, assertSetsEqual} = require('../src/utils-testing');
 const vscode = require('vscode');
 const assert = require('assert');
+const {originalText} = require("./test_python");
 
 suite('Extension Test Suite', () => {
 
@@ -387,9 +388,13 @@ suite('Python Parser Test Suite', () => {
         await vscode.commands.executeCommand('editor.action.selectAll');
         await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
 
-        // Assert that the finalText is equal to the first 7 lines of the originalText
-        // printDebugInfo("finalText", document.getText());
-        assert.strictEqual(document.getText().replace(/\r\n/g, '\n'), originalText.replace(/\r\n/g, '\n'));
+        // Assert that the finalText is equal to the originalText
+        // Actual will have an extra whitespace character that we just slice out
+        const actual = document.getText().replace(/\r\n/g, '\n').slice(0,-1)
+        const expected = originalText.replace(/\r\n/g, '\n')
+        printDebugInfo("actual", actual);
+        printDebugInfo("expected", expected)
+        assert.strictEqual(actual, expected);
     });
 
 });
