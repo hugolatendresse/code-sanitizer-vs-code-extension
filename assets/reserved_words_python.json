@@ -69,5 +69,5 @@
     "__len__",
     "__await__",
     "__aiter__", "__anext__",
-    "__aenter__", "__aexit__",
+    "__aenter__", "__aexit__"
 ]
