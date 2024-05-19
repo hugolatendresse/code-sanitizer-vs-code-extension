@@ -6,7 +6,6 @@ const topPyPIProjectNames = new Set(require('../assets/top-pypi-project-names-al
 const {printDebugInfo, assertAllTokensDifferent, assertSomeTokensSame, assertSetsEqual} = require('../src/utils-testing');
 const vscode = require('vscode');
 const assert = require('assert');
-const {originalText, sameExpectedTokens} = require("./test_python");
 
 suite('Extension Test Suite', () => {
 
