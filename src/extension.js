@@ -2,54 +2,24 @@ const vscode = require('vscode');
 const Anonymizer = require('./anonymizer');
 
 let anonymizer = new Anonymizer();
-let seenScripts = new Set();
 
 function activate(context) {
 
-    // Register an event listener for when the active text editor changes
-    vscode.window.onDidChangeActiveTextEditor(editor => {
-        if (editor) {
-            const filePath = editor.document.uri.fsPath;
-
-            // Check if the script has been seen before
-            if (!seenScripts.has(filePath)) {
-                // If not, add it to the set of seen scripts
-                seenScripts.add(filePath);
-
-                // Run your code here
-
-                // Check if it's a python script and add python-related reserved words
-                if (editor.document.getText().includes('import')) {
-                    const allText = editor.document.getText(); // This gets the entire text of the active document
-                    anonymizer.read_entire_python_script(allText);
-                }
-
-                // Check if it's an R script and add R-related reserved words
-                const RStringsToCheck = ['library', 'require'];
-                if (RStringsToCheck.some(keyword => editor.document.getText().includes(keyword))) {
-                    const allText = editor.document.getText(); // This gets the entire text of the active document
-                    anonymizer.read_entire_R_script(allText);
-                }
-            }
-        }
-    });
+    // Can try to gain efficiencies by running something when the active text editor changes
+    // vscode.window.onDidChangeActiveTextEditor(editor => {
+    //     if (editor) {
+    //         const filePath = editor.document.uri.fsPath;
+    //         const allText = editor.document.getText(); // This gets the entire text of the active document
+    //         anonymizer.read_entire_script(filePath, allText);
+    //     }
+    // });
 
     let disposable = vscode.commands.registerCommand('code-sanitizer.anonymizeAndCopy', function () {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
-
-
-
             const selection = editor.selection;
             const selectedText = editor.document.getText(selection);
-
-            // Check if it's a python script and add python-related reserved words
-            // TODO remove this!!! we want to run only on active text editor change now
-            if (editor.document.getText().includes('import')) {
-                const allText = editor.document.getText(); // This gets the entire text of the active document
-                anonymizer.read_entire_python_script(allText);
-            }
-
+            anonymizer.read_entire_script(editor.document.uri.fsPath, editor.document.getText());
             let modifiedText = anonymizer.anonymize(selectedText);
             vscode.env.clipboard.writeText(modifiedText)
         }

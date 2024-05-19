@@ -22,6 +22,7 @@ class Anonymizer {
         this.reservedWordsCaseSensitive = new Set([...this.reservedWordsPython, ...this.reservedWordsR]);
         this.topPyPIProjectNames = new Set(topPyPIProjectNames);
         this.topRProjectNames = new Set(topRProjectNames);
+        this.seenScripts = new Set();
     }
 
     generateRandomString(length = 8) {
@@ -81,6 +82,26 @@ class Anonymizer {
             [array[i], array[j]] = [array[j], array[i]]; // Swap elements
         }
     }
+
+    read_entire_script(filePath, allText) {
+        // Check if it's a python script and add python-related reserved words
+        if (allText.includes('import')) {
+            this.read_entire_python_script(allText);
+        }
+
+        // Check if it's an R script and add R-related reserved words
+        const RStringsToCheck = ['library', 'require']; // TODO move to attribute
+        if (RStringsToCheck.some(keyword => allText.includes(keyword))) {
+            this.read_entire_R_script(allText);
+        }
+
+        // Previous was trying to only read each script once, but doesn't work since user might edit right before pasting
+        // // Check if the script has been seen before
+        // if (!this.seenScripts.has(filePath)) {
+        //     // If not, add it to the set of seen scripts
+        //     this.seenScripts.add(filePath);
+    }
+
 
     read_entire_python_script(allText) {
         let reservedWordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);
