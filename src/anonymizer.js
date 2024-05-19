@@ -79,7 +79,7 @@ class Anonymizer {
     }
 
     unanonymize(query) {
-        printDebugInfo("trying to unanonymize this query", query, debug);
+        // printDebugInfo("trying to unanonymize this query", query, debug);
         if (debug) {
             console.log("mapping:");
             // Iterate over the mapping object and print each key-value pair
@@ -90,7 +90,7 @@ class Anonymizer {
         Object.entries(this.mapping).forEach(([originalToken, sanitizedToken]) => {
             query = this.replaceInString(sanitizedToken, originalToken, query);
         });
-        printDebugInfo("returning this query", query, debug);
+        // printDebugInfo("returning this query", query, debug);
         return query;
     }
 
