@@ -1,20 +1,12 @@
 const parsePythonScript = require('./python_parser');
+const parseRScript = require('./R_parser');
 const reservedWordsSQLUpper = require('../assets/reserved_words_sql_upper.json');
 const reservedWordsPython = require('../assets/reserved_words_python.json')
+const reservedWordsR = require('../assets/reserved_words_r.json')
 const dictWords = require('../assets/dict_words.json');
-const topPyPIProjectNames = require('../assets/top-pypi-project-names-all');
+const topPyPIProjectNames = require('../assets/top-pypi-project-names-all.json');
+const topRProjectNames = require('../assets/R_supported_packages.json');
 
-const debug = false;
-
-function printDebugInfo(someName, someVar, debug) {
-    if (!debug) {
-        return;
-    }
-    console.log("\n\<<<<<<<<<<<<<<<<< In anonymizer.js <<<<<<<<<<<<<<<<<<<<<<<<");
-    console.log(someName, ":");
-    console.log(someVar);
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-}
 
 class Anonymizer {
     constructor(tokenMode = 'dictionary') {
@@ -26,11 +18,11 @@ class Anonymizer {
         }
         this.reservedWordsSQLUpper = new Set(reservedWordsSQLUpper);
         this.reservedWordsPython = new Set(reservedWordsPython);
+        this.reservedWordsR = new Set(reservedWordsR);
+        this.reservedWordsCaseSensitive = new Set([...this.reservedWordsPython, ...this.reservedWordsR]);
         this.topPyPIProjectNames = new Set(topPyPIProjectNames);
-        // printDebugInfo("constructor topPyPIProjectNames", this.topPyPIProjectNames);
-        // printDebugInfo("constructor topPyPIProjectNames type", typeof this.topPyPIProjectNames);
-        // printDebugInfo("constructor topPyPIProjectNames size", this.topPyPIProjectNames.size);
-       
+        this.topRProjectNames = new Set(topRProjectNames);
+        this.seenScripts = new Set();
     }
 
     generateRandomString(length = 8) {
@@ -60,7 +52,7 @@ class Anonymizer {
         this.tokens = query.match(/\b\w+\b/g);
         this.tokens.forEach(token => {
             const upperToken = token.toUpperCase();
-            if (!(this.reservedWordsSQLUpper.has(upperToken) || this.reservedWordsPython.has(token))) {
+            if (!(this.reservedWordsSQLUpper.has(upperToken) || this.reservedWordsCaseSensitive.has(token))) {
                 // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
                 if (!this.mapping.hasOwnProperty(token)) {
                     this.mapping[token] = this.generateRandomString();
@@ -73,18 +65,9 @@ class Anonymizer {
     }
 
     unanonymize(query) {
-        printDebugInfo("trying to unanonymize this query", query, debug);
-        if (debug) {
-            console.log("mapping:");
-            // Iterate over the mapping object and print each key-value pair
-            Object.entries(this.mapping).forEach(([key, value]) => {
-                console.log(`${key}: ${value}`);
-            });
-        }
         Object.entries(this.mapping).forEach(([originalToken, sanitizedToken]) => {
             query = this.replaceInString(sanitizedToken, originalToken, query);
         });
-        printDebugInfo("returning this query", query, debug);
         return query;
     }
 
@@ -100,9 +83,34 @@ class Anonymizer {
         }
     }
 
+    read_entire_script(filePath, allText) {
+        // Check if it's a python script and add python-related reserved words
+        if (allText.includes('import')) {
+            this.read_entire_python_script(allText);
+        }
+
+        // Check if it's an R script and add R-related reserved words
+        const RStringsToCheck = ['library', 'require']; // TODO move to attribute
+        if (RStringsToCheck.some(keyword => allText.includes(keyword))) {
+            this.read_entire_R_script(allText);
+        }
+
+        // Previous was trying to only read each script once, but doesn't work since user might edit right before pasting
+        // // Check if the script has been seen before
+        // if (!this.seenScripts.has(filePath)) {
+        //     // If not, add it to the set of seen scripts
+        //     this.seenScripts.add(filePath);
+    }
+
+
     read_entire_python_script(allText) {
         let reservedWordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);
-        this.reservedWordsPython = new Set([...this.reservedWordsPython, ...reservedWordsFromPythonScript]);
+        this.reservedWordsCaseSensitive = new Set([...this.reservedWordsCaseSensitive, ...reservedWordsFromPythonScript]);
+    }
+
+    read_entire_R_script(allText) {
+        let reservedWordsFromRScript = parseRScript(allText, this.topRProjectNames);
+        this.reservedWordsCaseSensitive = new Set([...this.reservedWordsCaseSensitive, ...reservedWordsFromRScript]);
     }
 }
 

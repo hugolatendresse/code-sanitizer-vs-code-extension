@@ -324,10 +324,11 @@ suite('Python Parser Test Suite', () => {
         let editor = await vscode.window.showTextDocument(doc);
         let document = editor.document;
         assert.ok(editor, 'No active editor');
-        const {originalText, sameExpectedTokens}  = require('./test_python')
-        // printDebugInfo(originalText)
+        const {originalTextLongTestPython, sameExpectedTokensLongTestPython}  = require('./test_python')
+        // printDebugInfo("originalText", originalText)
+        // printDebugInfo("sameExpectedTokens", sameExpectedTokens)
         await editor.edit(editBuilder => {
-            editBuilder.insert(new vscode.Position(0, 0), originalText);
+            editBuilder.insert(new vscode.Position(0, 0), originalTextLongTestPython);
         });
 
         // Copy and sanitize
@@ -345,7 +346,11 @@ suite('Python Parser Test Suite', () => {
         await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
 
         // Assert that every token in selection is different from the original text, except for SQL words
-        assertSomeTokensSame(originalText, document.getText(), sameExpectedTokens);
+        // console.log("Original Test:")
+        // console.log(originalText)
+        // console.log("get text:")
+        // console.log(document.getText())
+        assertSomeTokensSame(originalTextLongTestPython, document.getText(), sameExpectedTokensLongTestPython);
 
         // Assert that the third line is as before
         const pastedLines = document.getText().split('\n');
@@ -364,7 +369,7 @@ suite('Python Parser Test Suite', () => {
         // printDebugInfo("originalText line 280, expect 10 lines of unsanitized text", originalText);
         const clipboardText = await vscode.env.clipboard.readText();
         // printDebugInfo("vscode.env.clipboard.readText() line 282 (expect 7 lines of sanitized text)", clipboardText);
-        assertSomeTokensSame(originalText, clipboardText, sameExpectedTokens);  // this line randomly fails!!
+        assertSomeTokensSame(originalTextLongTestPython, clipboardText, sameExpectedTokensLongTestPython);  // this line randomly fails!!
 
         // Replace all text in the editor with "hello world"
         // const text_before_helloworld = document.getText();
@@ -383,14 +388,14 @@ suite('Python Parser Test Suite', () => {
         });
 
         // Replace all text in the editor with the unsanitized text
-        assertAllTokensDifferent(originalText, document.getText());  // Should have nothing in common with Hello World
+        assertAllTokensDifferent(originalTextLongTestPython, document.getText());  // Should have nothing in common with Hello World
         await vscode.commands.executeCommand('editor.action.selectAll');
         await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
 
         // Assert that the finalText is equal to the originalText
         // Actual will have an extra whitespace character that we just slice out
         const actual = document.getText().replace(/\r\n/g, '\n').slice(0,-1)
-        const expected = originalText.replace(/\r\n/g, '\n')
+        const expected = originalTextLongTestPython.replace(/\r\n/g, '\n')
         // printDebugInfo("actual", actual);
         // printDebugInfo("expected", expected)
         assert.strictEqual(actual, expected);
@@ -400,20 +405,21 @@ suite('Python Parser Test Suite', () => {
 
 suite('R Parser Test Suite', () => {
 
+    // TODO
     test('Test 00 r_Parser (12 lines)', async () => {
         const rScript = `
         # Load the necessary libraries
         library(ggplot2)
         library(tidyverse)
-        
+
         # Load data (you can replace this with your actual data source)
         data("mtcars")  # Using mtcars dataset for demonstration
-        
+
         # Use dplyr to manipulate the dataset
         filtered_data <- mtcars %>%
           select(wt, mpg) %>%
           filter(mpg <= 30)  # Filtering to focus on cars with mpg 30 or less
-        
+
         # Create the scatter plot using ggplot2
         ggplot(filtered_data, aes(x = wt, y = mpg)) +
           geom_point(aes(color = wt), size = 3) +  # Points colored by weight
@@ -438,12 +444,13 @@ suite('R Parser Test Suite', () => {
         assertSetsEqual(parsePythonScript_out, expectedFinalanser, 'final does not equal expectedFinalanser'); // Only Difference: stillincluded6
     });
 
+    // TODO
     test('Test 01 r_parser (100 lines)', async () => {
         let doc = await vscode.workspace.openTextDocument({content: ' '});
         let editor = await vscode.window.showTextDocument(doc);
         let document = editor.document;
         assert.ok(editor, 'No active editor');
-        const {originalText, sameExpectedTokens}  = require('./test_python')
+        const {originalText, sameExpectedTokens}  = require('./test_r')
         // printDebugInfo(originalText)
         await editor.edit(editBuilder => {
             editBuilder.insert(new vscode.Position(0, 0), originalText);
