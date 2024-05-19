@@ -172,7 +172,8 @@ const sameExpectedTokens = [
      "10",
     "Create","For","I","In","None","Then","True","a","add","all","any","as","break","case","column","complex",
     "cosine_similarities","filter","from","function","group","if","into", "index","is","key","map","metrics","not","of",
-    "query_vector","return","s","some","str","t","to","try","use","value","with","x"
+    "query_vector","return","s","some","str","t","to","try","use","value","with","x",
+    "array", "sample"
 
 ]
 

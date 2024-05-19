@@ -31,7 +31,14 @@ function assertSomeTokensSame(text1, text2, sameExpectedTokens) {
 		}
 	});
 	// Check that the common tokens are as expected, ignoring the order
-	assert.deepStrictEqual(Array.from(new Set(sameTokens)).sort(), Array.from(new Set(sameExpectedTokens)).sort());
+    const actual_array = Array.from(new Set(sameTokens)).sort()
+    const expected_array = Array.from(new Set(sameExpectedTokens)).sort()
+
+    console.log("left:")
+    console.log(actual_array)
+    console.log("right:")
+    console.log(expected_array)
+	assert.deepStrictEqual(actual_array, expected_array);
 }
 
 function assertSetsEqual(set1, set2, message = '') {

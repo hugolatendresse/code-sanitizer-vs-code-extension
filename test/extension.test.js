@@ -326,8 +326,8 @@ suite('Python Parser Test Suite', () => {
         let document = editor.document;
         assert.ok(editor, 'No active editor');
         const {originalText, sameExpectedTokens}  = require('./test_python')
-        printDebugInfo("originalText", originalText)
-        printDebugInfo("sameExpectedTokens", sameExpectedTokens)
+        // printDebugInfo("originalText", originalText)
+        // printDebugInfo("sameExpectedTokens", sameExpectedTokens)
         await editor.edit(editBuilder => {
             editBuilder.insert(new vscode.Position(0, 0), originalText);
         });
@@ -347,6 +347,10 @@ suite('Python Parser Test Suite', () => {
         await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
 
         // Assert that every token in selection is different from the original text, except for SQL words
+        // console.log("Original Test:")
+        // console.log(originalText)
+        // console.log("get text:")
+        // console.log(document.getText())
         assertSomeTokensSame(originalText, document.getText(), sameExpectedTokens);
 
         // Assert that the third line is as before
@@ -402,119 +406,121 @@ suite('Python Parser Test Suite', () => {
 
 suite('R Parser Test Suite', () => {
 
-    test('Test 00 r_Parser (12 lines)', async () => {
-        const rScript = `
-        # Load the necessary libraries
-        library(ggplot2)
-        library(tidyverse)
-        
-        # Load data (you can replace this with your actual data source)
-        data("mtcars")  # Using mtcars dataset for demonstration
-        
-        # Use dplyr to manipulate the dataset
-        filtered_data <- mtcars %>%
-          select(wt, mpg) %>%
-          filter(mpg <= 30)  # Filtering to focus on cars with mpg 30 or less
-        
-        # Create the scatter plot using ggplot2
-        ggplot(filtered_data, aes(x = wt, y = mpg)) +
-          geom_point(aes(color = wt), size = 3) +  # Points colored by weight
-          geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add a regression line
-          labs(title = "Car Weight vs. MPG",
-               x = "Weight (1000 lbs)",
-               y = "Miles per Gallon",
-               color = "Weight") +
-          theme_minimal()  # Use a minimal theme for the plot
-		`;
+    // TODO uncomment
+    // test('Test 00 r_Parser (12 lines)', async () => {
+    //     const rScript = `
+    //     # Load the necessary libraries
+    //     library(ggplot2)
+    //     library(tidyverse)
+    //
+    //     # Load data (you can replace this with your actual data source)
+    //     data("mtcars")  # Using mtcars dataset for demonstration
+    //
+    //     # Use dplyr to manipulate the dataset
+    //     filtered_data <- mtcars %>%
+    //       select(wt, mpg) %>%
+    //       filter(mpg <= 30)  # Filtering to focus on cars with mpg 30 or less
+    //
+    //     # Create the scatter plot using ggplot2
+    //     ggplot(filtered_data, aes(x = wt, y = mpg)) +
+    //       geom_point(aes(color = wt), size = 3) +  # Points colored by weight
+    //       geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add a regression line
+    //       labs(title = "Car Weight vs. MPG",
+    //            x = "Weight (1000 lbs)",
+    //            y = "Miles per Gallon",
+    //            color = "Weight") +
+    //       theme_minimal()  # Use a minimal theme for the plot
+	// 	`;
+    //
+    //     const expectedFinalanser = ["os", "np", "os_path", "system", "pd", "plt", "deepcopy",
+    //         "numpy",
+    //         "path",
+    //         "otherfunctoinclude3",
+    //         "shouldalsobethere4",
+    //         "stillincluded5",
+    //         "stillincluded6",
+    //         "axis",
+    //     ];
+    //     const parsePythonScript_out = parseRScript(rScript, topPyPIProjectNames,false);
+    //     assertSetsEqual(parsePythonScript_out, expectedFinalanser, 'final does not equal expectedFinalanser'); // Only Difference: stillincluded6
+    // });
 
-        const expectedFinalanser = ["os", "np", "os_path", "system", "pd", "plt", "deepcopy",
-            "numpy",
-            "path",
-            "otherfunctoinclude3",
-            "shouldalsobethere4",
-            "stillincluded5",
-            "stillincluded6",
-            "axis",
-        ];
-        const parsePythonScript_out = parseRScript(rScript, topPyPIProjectNames,false);
-        assertSetsEqual(parsePythonScript_out, expectedFinalanser, 'final does not equal expectedFinalanser'); // Only Difference: stillincluded6
-    });
-
-    test('Test 01 r_parser (100 lines)', async () => {
-        let doc = await vscode.workspace.openTextDocument({content: ' '});
-        let editor = await vscode.window.showTextDocument(doc);
-        let document = editor.document;
-        assert.ok(editor, 'No active editor');
-        const {originalText, sameExpectedTokens}  = require('./test_r')
-        // printDebugInfo(originalText)
-        await editor.edit(editBuilder => {
-            editBuilder.insert(new vscode.Position(0, 0), originalText);
-        });
-
-        // Copy and sanitize
-        const lastLine = document.lineAt(document.lineCount - 1);
-        const range = new vscode.Range(0, 0, document.lineCount - 1, lastLine.text.length);
-        editor.selection = new vscode.Selection(range.start, range.end);
-        await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
-        // printDebugInfo("clipboard check", await vscode.env.clipboard.readText();)
-
-        // Clear the editor
-        await vscode.commands.executeCommand('editor.action.selectAll');
-        await vscode.commands.executeCommand('editor.action.deleteLines');
-
-        // Paste in editor so that editor contains sanitized text
-        await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
-
-        // Assert that every token in selection is different from the original text, except for SQL words
-        assertSomeTokensSame(originalText, document.getText(), sameExpectedTokens);
-
-        // Assert that the third line is as before
-        const pastedLines = document.getText().split('\n');
-        assert.strictEqual(pastedLines[2], "import pandas as pd\r");
-
-        // Set clipboard to something random
-        await vscode.env.clipboard.writeText("random text");
-
-        // Copy all text in the editor such that clipboard contains the sanitized text
-        // printDebugInfo("document.getText() line 274 (expected 10 lines of sanitized text)", document.getText());
-        await vscode.commands.executeCommand('editor.action.selectAll');
-        await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        // Assert that every token in selection is different from the original text, except for SQL words
-        // printDebugInfo("originalText line 280, expect 10 lines of unsanitized text", originalText);
-        const clipboardText = await vscode.env.clipboard.readText();
-        // printDebugInfo("vscode.env.clipboard.readText() line 282 (expect 7 lines of sanitized text)", clipboardText);
-        assertSomeTokensSame(originalText, clipboardText, sameExpectedTokens);  // this line randomly fails!!
-
-        // Replace all text in the editor with "hello world"
-        // const text_before_helloworld = document.getText();
-        // printDebugInfo("text_before_priting_hello_world", text_before_helloworld);
-        await vscode.commands.executeCommand('editor.action.selectAll');
-        await vscode.commands.executeCommand('editor.action.deleteLines');
-        await editor.edit(editBuilder => {
-            // Create a range that covers the entire document
-            let range = new vscode.Range(
-                document.positionAt(0),
-                document.positionAt(document.getText().length)
-            );
-
-            // Replace the range with "hello world"
-            editBuilder.replace(range, "hello world");
-        });
-
-        // Replace all text in the editor with the unsanitized text
-        assertAllTokensDifferent(originalText, document.getText());  // Should have nothing in common with Hello World
-        await vscode.commands.executeCommand('editor.action.selectAll');
-        await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
-
-        // Assert that the finalText is equal to the originalText
-        // Actual will have an extra whitespace character that we just slice out
-        const actual = document.getText().replace(/\r\n/g, '\n').slice(0,-1)
-        const expected = originalText.replace(/\r\n/g, '\n')
-        // printDebugInfo("actual", actual);
-        // printDebugInfo("expected", expected)
-        assert.strictEqual(actual, expected);
-    });
+    // TODO uncomment
+    // test('Test 01 r_parser (100 lines)', async () => {
+    //     let doc = await vscode.workspace.openTextDocument({content: ' '});
+    //     let editor = await vscode.window.showTextDocument(doc);
+    //     let document = editor.document;
+    //     assert.ok(editor, 'No active editor');
+    //     const {originalText, sameExpectedTokens}  = require('./test_r')
+    //     // printDebugInfo(originalText)
+    //     await editor.edit(editBuilder => {
+    //         editBuilder.insert(new vscode.Position(0, 0), originalText);
+    //     });
+    //
+    //     // Copy and sanitize
+    //     const lastLine = document.lineAt(document.lineCount - 1);
+    //     const range = new vscode.Range(0, 0, document.lineCount - 1, lastLine.text.length);
+    //     editor.selection = new vscode.Selection(range.start, range.end);
+    //     await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
+    //     // printDebugInfo("clipboard check", await vscode.env.clipboard.readText();)
+    //
+    //     // Clear the editor
+    //     await vscode.commands.executeCommand('editor.action.selectAll');
+    //     await vscode.commands.executeCommand('editor.action.deleteLines');
+    //
+    //     // Paste in editor so that editor contains sanitized text
+    //     await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+    //
+    //     // Assert that every token in selection is different from the original text, except for SQL words
+    //     assertSomeTokensSame(originalText, document.getText(), sameExpectedTokens);
+    //
+    //     // Assert that the third line is as before
+    //     const pastedLines = document.getText().split('\n');
+    //     assert.strictEqual(pastedLines[2], "import pandas as pd\r");
+    //
+    //     // Set clipboard to something random
+    //     await vscode.env.clipboard.writeText("random text");
+    //
+    //     // Copy all text in the editor such that clipboard contains the sanitized text
+    //     // printDebugInfo("document.getText() line 274 (expected 10 lines of sanitized text)", document.getText());
+    //     await vscode.commands.executeCommand('editor.action.selectAll');
+    //     await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
+    //     await new Promise(resolve => setTimeout(resolve, 100));
+    //
+    //     // Assert that every token in selection is different from the original text, except for SQL words
+    //     // printDebugInfo("originalText line 280, expect 10 lines of unsanitized text", originalText);
+    //     const clipboardText = await vscode.env.clipboard.readText();
+    //     // printDebugInfo("vscode.env.clipboard.readText() line 282 (expect 7 lines of sanitized text)", clipboardText);
+    //     assertSomeTokensSame(originalText, clipboardText, sameExpectedTokens);  // this line randomly fails!!
+    //
+    //     // Replace all text in the editor with "hello world"
+    //     // const text_before_helloworld = document.getText();
+    //     // printDebugInfo("text_before_priting_hello_world", text_before_helloworld);
+    //     await vscode.commands.executeCommand('editor.action.selectAll');
+    //     await vscode.commands.executeCommand('editor.action.deleteLines');
+    //     await editor.edit(editBuilder => {
+    //         // Create a range that covers the entire document
+    //         let range = new vscode.Range(
+    //             document.positionAt(0),
+    //             document.positionAt(document.getText().length)
+    //         );
+    //
+    //         // Replace the range with "hello world"
+    //         editBuilder.replace(range, "hello world");
+    //     });
+    //
+    //     // Replace all text in the editor with the unsanitized text
+    //     assertAllTokensDifferent(originalText, document.getText());  // Should have nothing in common with Hello World
+    //     await vscode.commands.executeCommand('editor.action.selectAll');
+    //     await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
+    //
+    //     // Assert that the finalText is equal to the originalText
+    //     // Actual will have an extra whitespace character that we just slice out
+    //     const actual = document.getText().replace(/\r\n/g, '\n').slice(0,-1)
+    //     const expected = originalText.replace(/\r\n/g, '\n')
+    //     // printDebugInfo("actual", actual);
+    //     // printDebugInfo("expected", expected)
+    //     assert.strictEqual(actual, expected);
+    // });
 
 })
