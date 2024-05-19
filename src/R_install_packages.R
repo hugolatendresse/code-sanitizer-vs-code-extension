@@ -2,7 +2,7 @@ if (!require(jsonlite)) {
   install.packages("jsonlite")
 }
 
-json_file_path <- "../assets/R_supported_packages.json"
+json_file_path <- "assets/R_supported_packages.json"
 packages <- fromJSON(json_file_path)
 
 install_packs <- function(packages)
