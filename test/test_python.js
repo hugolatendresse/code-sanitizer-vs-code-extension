@@ -1,4 +1,4 @@
-const originalText = `from sklearn.metrics.pairwise import linear_kernel, cosine_similarity, euclidean_distances
+const originalTextLongTestPython = `from sklearn.metrics.pairwise import linear_kernel, cosine_similarity, euclidean_distances
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import euclidean
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     tfidf_with_sublinear_tf(query=query, notes=notes1)`
 
 
-const sameExpectedTokens = [
+const sameExpectedTokensLongTestPython = [
     "from",
 "sklearn",
 "metrics",
@@ -178,6 +178,6 @@ const sameExpectedTokens = [
 ]
 
 module.exports = {
-    originalText,
-    sameExpectedTokens
+    originalTextLongTestPython,
+    sameExpectedTokensLongTestPython
 };
