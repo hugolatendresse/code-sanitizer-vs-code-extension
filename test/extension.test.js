@@ -6,6 +6,7 @@ const topPyPIProjectNames = new Set(require('../assets/top-pypi-project-names-al
 const {printDebugInfo, assertAllTokensDifferent, assertSomeTokensSame, assertSetsEqual} = require('../src/utils-testing');
 const vscode = require('vscode');
 const assert = require('assert');
+const {originalText} = require("./test_python");
 
 suite('Extension Test Suite', () => {
 
@@ -325,7 +326,8 @@ suite('Python Parser Test Suite', () => {
         let document = editor.document;
         assert.ok(editor, 'No active editor');
         const {originalText, sameExpectedTokens}  = require('./test_python')
-        // printDebugInfo(originalText)
+        printDebugInfo("originalText", originalText)
+        printDebugInfo("sameExpectedTokens", sameExpectedTokens)
         await editor.edit(editBuilder => {
             editBuilder.insert(new vscode.Position(0, 0), originalText);
         });
@@ -443,7 +445,7 @@ suite('R Parser Test Suite', () => {
         let editor = await vscode.window.showTextDocument(doc);
         let document = editor.document;
         assert.ok(editor, 'No active editor');
-        const {originalText, sameExpectedTokens}  = require('./test_python')
+        const {originalText, sameExpectedTokens}  = require('./test_r')
         // printDebugInfo(originalText)
         await editor.edit(editBuilder => {
             editBuilder.insert(new vscode.Position(0, 0), originalText);
