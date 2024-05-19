@@ -565,11 +565,14 @@ suite('R Parser Test Suite', () => {
         await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
         await new Promise(resolve => setTimeout(resolve, 100));
 
-        // Assert that every token in selection is different from the original text, except for SQL words
+        // Assert that every token in selection is different from the original text, except for reserved words
         // printDebugInfo("originalText line 280, expect 10 lines of unsanitized text", originalText);
         const clipboardText = await vscode.env.clipboard.readText();
         // printDebugInfo("vscode.env.clipboard.readText() line 282 (expect 7 lines of sanitized text)", clipboardText);
-        assertSomeTokensSame(originalTextRNoLibrary, clipboardText, sameExpectedTokensRNoLibrary);  // this line randomly fails!!
+        assertSomeTokensSame(originalTextRNoLibrary, clipboardText, sameExpectedTokensRNoLibrary);
+        // Assert that user-owned libraries were sanitized
+        assert.strictEqual(clipboardText.includes("somerandomdoesntexist"), false);
+        assert.strictEqual(clipboardText.includes("anothermadeuplibrary"), false);
 
         // Replace all text in the editor with "hello world"
         // const text_before_helloworld = document.getText();
