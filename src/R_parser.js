@@ -8,7 +8,7 @@ const debug = false;
 
 
 // Returns a dictionary describing the imports and modules used in the Python script.
-function getRImports(script, topPyPIProjectNames) {
+function getRImports(script) {
 
     // TODO need to refactor this since it won't be able to handle imports over multiple lines (with a \)
     // TODO so simply refactor with tree parse!!
@@ -87,12 +87,12 @@ function processRImports(importData, topPyPIProjectNames, debug=false) {
     return Array.from(results);
 }
 
-function parseRScript(script, toRProjectNames, debug=false) {
-    const extractedImports = getRImports(script, toRProjectNames);
-    const libraries = processRImports(extractedImports, toRProjectNames, debug);
+function parseRScript(script, topRProjectNames, debug=false) {
+    const extractedImports = getRImports(script, topRProjectNames);
+    const libraries = processRImports(extractedImports, topRProjectNames, debug);
     let results = new Set(libraries);
     let previousSize = -1;
-    const newKeyWords = findAllPythonKeywordsInQuery(script, libraries);
+    const newKeyWords = findAllRKeywordsInQuery(script, libraries);
     // Combine the two sets
     results = new Set([...results, ...newKeyWords]);
     return Array.from(results);
