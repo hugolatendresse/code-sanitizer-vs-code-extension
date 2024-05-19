@@ -4,14 +4,22 @@ const { printDebugInfo } = require('./utils-testing');
 // two tokens before to see if it's "import", for example
 const assert = require('assert');
 const {getAllNodes, findNodeByText, findAllPythonKeywordsInTree, findAllPythonKeywordsInQuery} = require("./utils-python");
+const Parser = require("tree-sitter");
+const R = require("tree-sitter-r");
 const debug = false;
 
 
 // Returns a dictionary describing the imports and modules used in the Python script.
 function getRImports(script) {
 
-    // TODO need to refactor this since it won't be able to handle imports over multiple lines (with a \)
-    // TODO so simply refactor with tree parse!!
+
+
+
+
+
+
+
+
 
     const importRegex = /^\s*import\s+([a-zA-Z0-9_]+)(\s+as\s+([a-zA-Z0-9_]+))?|^\s*from\s+([a-zA-Z0-9_.]+)\s+import\s+(.*)$/gm;
     let match;
@@ -100,3 +108,72 @@ function parseRScript(script, topRProjectNames, debug=false) {
 
 // Export parsePythonScript so it can be used in extension.js
 module.exports = parseRScript;
+
+
+// TODO handle this for package loading
+//         packages <- c("actuary", "ragg", "R6")
+//         lapply(packages, library, character.only = TRUE)
+
+
+
+const rscripttest = `
+        # Load the necessary libraries
+        library(ggplot2)
+        library("dplyr")
+        
+        # Load data (you can replace this with your actual data source)
+        data("mtcars")  # Using mtcars dataset for demonstration
+        
+        # Use dplyr to manipulate the dataset
+        filtered_data <- mtcars %>%
+          select(wt, mpg) %>%
+          filter(mpg <= 30)  # Filtering to focus on cars with mpg 30 or less
+        
+        # Create the scatter plot using ggplot2
+        ggplot(filtered_data, aes(x = wt, y = mpg)) +
+          geom_point(aes(color = wt), size = 3) +  # Points colored by weight
+          geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add a regression line
+          labs(title = "Car Weight vs. MPG",
+               x = "Weight (1000 lbs)",
+               y = "Miles per Gallon",
+               color = "Weight") +
+          theme_minimal()  # Use a minimal theme for the plot
+		`
+const parser = new Parser();
+parser.setLanguage(R);
+const tree = parser.parse(rscripttest);
+
+
+const result = [];
+let visitedChildren = false;
+let cursor = tree.walk();
+while (true) {
+    if (!visitedChildren) {
+
+        // Add different types of keywords
+        if (isParentOfCallPython(cursor.currentNode, keyWords)) {
+            // Add method calls following a '.'
+            const secondIdentifier = cursor.currentNode.children[2].text;
+            result.push(secondIdentifier);
+        } else if (isPythonKeywordArgumentOfMethodFromLibrary(cursor.currentNode, keyWords)) {
+            // Add keywords of arguments in function calls
+            const keyword = cursor.currentNode.children[0].text;
+            result.push(keyword);
+        }
+
+        // Continue walking the tree
+        if (!cursor.gotoFirstChild()) {
+            visitedChildren = true;
+        }
+    } else if (cursor.gotoNextSibling()) {
+        visitedChildren = false;
+    } else if (!cursor.gotoParent()) {
+        break;
+    }
+}
+// return result;
+
+
+
+console.log("hi");
+// findAllPythonKeywordsInTree(tree, keyWords);
