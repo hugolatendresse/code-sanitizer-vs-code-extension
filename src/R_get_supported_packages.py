@@ -1,7 +1,7 @@
 import json
 
 # Path to the JSON file
-file_path = 'R_packages_download_cnt.json'
+file_path = '../assets/R_packages_download_cnt.json'
 
 # Load the JSON data from the file
 with open(file_path, 'r') as f:
@@ -17,10 +17,10 @@ for name, cnt in packages:
                     or ("actu" in name.lower() and cnt > 10 ** 3)  # Include any package with "actu" and over 1000 downloads
                     or ("glm" in name.lower() and cnt > 10 ** 4)  # Include any package with "glm"  over 10000 downloads
             )
-            and not (name.lower() not in ['ggeffects'])  # Exclusions that don't work well
+            and name.lower() not in ['ggeffects']  # Exclusions that don't work well
 
     ):
         to_install.append(name)
 
-with open('R_supported_packages.json', 'w') as f:
+with open('../assets/R_supported_packages.json', 'w') as f:
     json.dump(to_install, f, indent=4)
