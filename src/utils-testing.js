@@ -1,12 +1,6 @@
 const assert = require('assert');
 
 
-function printDebugInfo(someName, someVar) {
-    console.log("\n\!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    console.log("This is the ", someName, ":");
-    console.log(someVar);
-    console.log("#######################################\n");
-}
 
 function assertAllTokensDifferent(text1, text2) {
 	assert.notStrictEqual(text1, text2);

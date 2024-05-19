@@ -9,15 +9,6 @@ const topRProjectNames = require('../assets/R_supported_packages.json');
 
 const debug = false;
 
-function printDebugInfo(someName, someVar, debug) {
-    if (!debug) {
-        return;
-    }
-    console.log("\n\<<<<<<<<<<<<<<<<< In anonymizer.js <<<<<<<<<<<<<<<<<<<<<<<<");
-    console.log(someName, ":");
-    console.log(someVar);
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-}
 
 class Anonymizer {
     constructor(tokenMode = 'dictionary') {
