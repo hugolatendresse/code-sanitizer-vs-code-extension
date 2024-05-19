@@ -7,7 +7,7 @@ const Python = require('tree-sitter-python');
 Looking for `caller.callee` pattern
 Check if nodes has 3 children, the right one is an identifer, and the middle one is a dot
 */
-function isParentOfCall(node, keyWords) {
+function isParentOfCallPython(node, keyWords) {
     try {
         let callCondition = node.children.length === 3 && node.children[1].text === '.' && node.children[2].type === 'identifier';
         const firstIdentifier = node.children[0].text;
@@ -27,7 +27,7 @@ y.parent is just an argument_list (can't conclude anything from the other argume
 z=y.parent.parent is of type call and the left part can be checked for being a keyword!
 Will the left part of z ALWAYS be a library name? Yes! I checked
 */
-function isKeywordArgumentOfMethodFromLibrary(node, keyWords) {
+function isPythonKeywordArgumentOfMethodFromLibrary(node, keyWords) {
     try {
         let libraryCond = keyWords.some(keyword => node.parent.parent.text.startsWith(keyword));
         let keywordCond = node.type === 'keyword_argument' && node.children[0].type === 'identifier' && node.parent.parent.type === 'call';
@@ -39,16 +39,16 @@ function isKeywordArgumentOfMethodFromLibrary(node, keyWords) {
 
 
 
-function findAllKeywordsInQuery(query, keyWords) {
+function findAllPythonKeywordsInQuery(query, keyWords) {
   const parser = new Parser();
   parser.setLanguage(Python);
   const tree = parser.parse(query);
-  return findAllKeywordsInTree(tree, keyWords);
+  return findAllPythonKeywordsInTree(tree, keyWords);
 }
 
 // Check all parents that have 3 children, two are identifiers, and the middle one is a dot. If the first identier starts with a keyword, then the second identifier is a keyword
 // First param is the tree
-function findAllKeywordsInTree(tree, keyWords) {
+function findAllPythonKeywordsInTree(tree, keyWords) {
     const result = [];
     let visitedChildren = false;
     let cursor = tree.walk();
@@ -56,11 +56,11 @@ function findAllKeywordsInTree(tree, keyWords) {
         if (!visitedChildren) {
 
             // Add different types of keywords
-            if (isParentOfCall(cursor.currentNode, keyWords)) {
+            if (isParentOfCallPython(cursor.currentNode, keyWords)) {
                 // Add method calls following a '.'
                 const secondIdentifier = cursor.currentNode.children[2].text;
                 result.push(secondIdentifier);
-            } else if (isKeywordArgumentOfMethodFromLibrary(cursor.currentNode, keyWords)) {
+            } else if (isPythonKeywordArgumentOfMethodFromLibrary(cursor.currentNode, keyWords)) {
                 // Add keywords of arguments in function calls
                 const keyword = cursor.currentNode.children[0].text;
                 result.push(keyword);
@@ -126,8 +126,8 @@ function findNodeByText(tree, searchText) {
 module.exports = {
     getAllNodes,
     findNodeByText,
-    findAllKeywordsInTree,
-    findAllKeywordsInQuery,
+    findAllPythonKeywordsInTree,
+    findAllPythonKeywordsInQuery,
 }
 
 
