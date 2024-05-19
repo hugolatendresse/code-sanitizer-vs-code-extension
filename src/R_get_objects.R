@@ -35,7 +35,7 @@ packages <- fromJSON(json_file_path)
 print(packages)
 
 # File to store the results incrementally
-output_file <- "assets/R_packages_objects_inc.json"
+output_file <- "assets/R_packages_objects.json"
 
 # Check if the output file already exists and initialize it if not
 if (!file.exists(output_file)) {
@@ -47,6 +47,7 @@ for (pkg in packages) {
   objects <- list_and_detach_package(pkg)
   if (!is.null(objects)) {
     # Read the current JSON data
+    library(jsonlite)
     current_data <- fromJSON(output_file)
     # Update the list for this package
     current_data[[pkg]] <- objects
