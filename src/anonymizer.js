@@ -29,7 +29,10 @@ class Anonymizer {
         }
         this.reservedWordsSQLUpper = new Set(reservedWordsSQLUpper);
         this.reservedWordsPython = new Set(reservedWordsPython);
+        this.reservedWordsR = new Set(reservedWordsR);
+        this.reservedWordsCaseSensitive = new Set([...this.reservedWordsPython, ...this.reservedWordsR]);
         this.topPyPIProjectNames = new Set(topPyPIProjectNames);
+        this.topRProjectNames = new Set(topRProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames", this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames type", typeof this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames size", this.topPyPIProjectNames.size);
