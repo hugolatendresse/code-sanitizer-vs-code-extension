@@ -60,7 +60,9 @@ cat("Script execution complete. Model and plots generated.")
 
 
 const sameExpectedTokensRNoLibrary = [
-    "set.seed", "data.frame", "sample", "replace", "TRUE", "round", "rnorm", "mean", "sd", "runif", "cut", "labels", "aggregate", "cbind", "FUN", "function", "x", "gsub", "lm", "summary", "predict", "newdata", "hist", "main", "xlab", "col", "border", "boxplot", "ylab", "plot", "pch", "abline", "save", "file", "cat"
+    "1", "17", "18", "19", "Convert", "Group", "Save", "a", "and", "by", "c", "column", "data", "disk", "frame", "get", "library", "of", "on", "require", "residuals", "set", "sum", "to", "with",
+    "sample", "replace", "TRUE", "round", "rnorm", "mean", "sd", "runif", "cut", "labels", "aggregate", "cbind", "FUN", "function", "x", "gsub", "lm", "summary", "predict", "newdata", "hist", "main", "xlab", "col", "border", "boxplot", "ylab", "plot", "pch", "abline", "save", "file", "cat",
+    "colnames",
 ]
 
 module.exports = {

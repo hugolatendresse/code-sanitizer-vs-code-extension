@@ -530,7 +530,6 @@ suite('R Parser Test Suite', () => {
     });
 
     test('Test 01 r_parser (no libraries)', async () => {
-        assert.strictEqual("TODO", "finish test");
 
         let doc = await vscode.workspace.openTextDocument({content: ' '});
         let editor = await vscode.window.showTextDocument(doc);

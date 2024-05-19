@@ -31,6 +31,7 @@
     "type", "vars", "zip",
     "__main__",
     "__init__",
+    "__new__",
     "__del__",
     "__repr__",
     "__str__",
