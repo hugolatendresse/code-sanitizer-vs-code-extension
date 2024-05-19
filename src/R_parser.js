@@ -1,20 +1,14 @@
-// TODO still need to sanitize what comes from custom libraries. Need a full list of all pipy librairies!
 
 const { printDebugInfo } = require('./utils-testing');
 
 // two tokens before to see if it's "import", for example
+const assert = require('assert');
 const {getAllNodes, findNodeByText, findAllPythonKeywordsInTree, findAllPythonKeywordsInQuery} = require("./utils-python");
+const debug = false;
 
-// TODO: need to catch if import * is used and say that's not supported right now
-
-// TODO see exactly what works and what doesn't below and prune the two functions above
-
-// TODO: 'axis'=0 in pandas call need to be preserved too!!!. I can maybe only sanitize strings within function calls?? idk
-
-// TODO handle numbers better? I could just not replace them, or replace by other numbers, OR replace by num1, num2, etc
 
 // Returns a dictionary describing the imports and modules used in the Python script.
-function getPythonImports(script) {
+function getRImports(script, topPyPIProjectNames) {
 
     // TODO need to refactor this since it won't be able to handle imports over multiple lines (with a \)
     // TODO so simply refactor with tree parse!!
@@ -41,7 +35,7 @@ function getPythonImports(script) {
 }
 
 // Allows adding individual tokens to the results set
-function addEachTokenToResults(results, text) {
+function addEachRTokenToResults(results, text) {
     const moduleTokens = text.match(/\b\w+\b/g);
     moduleTokens.forEach(token => {
         results.add(token);
@@ -49,11 +43,11 @@ function addEachTokenToResults(results, text) {
 }
 
 // Adds everything that needs to be added to the list of keywords from the dictionary of imports 
-function processPythonImports(importData, topPyPIProjectNames, debug=false) {
+function processRImports(importData, topPyPIProjectNames, debug=false) {
     const results = new Set();
 
     if (debug) {
-        console.log("importData (input of processPythonImports)", importData);
+        console.log("importData (input of processImports)", importData);
     }
 
     importData.forEach(entry => {
@@ -93,9 +87,9 @@ function processPythonImports(importData, topPyPIProjectNames, debug=false) {
     return Array.from(results);
 }
 
-function parsePythonScript(script, topPyPIProjectNames, debug=false) {
-    const extractedImports = getPythonImports(script, topPyPIProjectNames);
-    const libraries = processPythonImports(extractedImports, topPyPIProjectNames, debug);
+function parseRScript(script, toRProjectNames, debug=false) {
+    const extractedImports = getRImports(script, toRProjectNames);
+    const libraries = processRImports(extractedImports, toRProjectNames, debug);
     let results = new Set(libraries);
     let previousSize = -1;
     const newKeyWords = findAllPythonKeywordsInQuery(script, libraries);
@@ -104,7 +98,5 @@ function parsePythonScript(script, topPyPIProjectNames, debug=false) {
     return Array.from(results);
 }
 
-
-
 // Export parsePythonScript so it can be used in extension.js
-module.exports = parsePythonScript;
+module.exports = parseRScript;
