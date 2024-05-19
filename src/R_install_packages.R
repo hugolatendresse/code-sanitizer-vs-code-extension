@@ -963,18 +963,18 @@ packages <- c(    "ggplot2",
     "counterfactuals",
     "ActuarialM")
 
-# Function to install and load packages
-install_and_load < - function(packages)
+install_packs <- function(packages)
 {
-    # Identify packages that are not installed
-    new_packages < - packages[!(packages % in%installed.packages()[, "Package"])]
+    new_packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+  if (length(new_packages)) install.packages(new_packages)
 
-# Install the missing packages
-if (length(new_packages)) install.packages(new_packages)
+}
 
-# Load the packages
+load_packs <- function(packages)
+{
 sapply(packages, require, character.only = TRUE)
 }
 
+
 # Call the function with your vector of packages
-install_and_load(packages)
+install_packs(packages)
