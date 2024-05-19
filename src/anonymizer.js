@@ -1,8 +1,11 @@
 const parsePythonScript = require('./python_parser');
+const parseRScript = require('./R_parser');
 const reservedWordsSQLUpper = require('../assets/reserved_words_sql_upper.json');
 const reservedWordsPython = require('../assets/reserved_words_python.json')
+const reservedWordsR = require('../assets/reserved_words_r.json')
 const dictWords = require('../assets/dict_words.json');
-const topPyPIProjectNames = require('../assets/top-pypi-project-names-all');
+const topPyPIProjectNames = require('../assets/top-pypi-project-names-all.json');
+const topRProjectNames = require('../assets/R_supported_packages.json');
 
 const debug = false;
 
