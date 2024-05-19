@@ -1,8 +1,11 @@
 const parsePythonScript = require('./python_parser');
+const parseRScript = require('./R_parser');
 const reservedWordsSQLUpper = require('../assets/reserved_words_sql_upper.json');
 const reservedWordsPython = require('../assets/reserved_words_python.json')
+const reservedWordsR = require('../assets/reserved_words_r.json')
 const dictWords = require('../assets/dict_words.json');
-const topPyPIProjectNames = require('../assets/top-pypi-project-names-all');
+const topPyPIProjectNames = require('../assets/top-pypi-project-names-all.json');
+const topRProjectNames = require('../assets/R_supported_packages.json');
 
 const debug = false;
 
@@ -26,7 +29,10 @@ class Anonymizer {
         }
         this.reservedWordsSQLUpper = new Set(reservedWordsSQLUpper);
         this.reservedWordsPython = new Set(reservedWordsPython);
+        this.reservedWordsR = new Set(reservedWordsR);
+        this.reservedWordsCaseSensitive = new Set([...this.reservedWordsPython, ...this.reservedWordsR]);
         this.topPyPIProjectNames = new Set(topPyPIProjectNames);
+        this.topRProjectNames = new Set(topRProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames", this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames type", typeof this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames size", this.topPyPIProjectNames.size);
@@ -60,7 +66,7 @@ class Anonymizer {
         this.tokens = query.match(/\b\w+\b/g);
         this.tokens.forEach(token => {
             const upperToken = token.toUpperCase();
-            if (!(this.reservedWordsSQLUpper.has(upperToken) || this.reservedWordsPython.has(token))) {
+            if (!(this.reservedWordsSQLUpper.has(upperToken) || this.reservedWordsCaseSensitive.has(token))) {
                 // If the token is not reserved and if it's not yet in mapping, add a mapping for that token
                 if (!this.mapping.hasOwnProperty(token)) {
                     this.mapping[token] = this.generateRandomString();
@@ -102,8 +108,14 @@ class Anonymizer {
 
     read_entire_python_script(allText) {
         let reservedWordsFromPythonScript = parsePythonScript(allText, this.topPyPIProjectNames);
-        this.reservedWordsPython = new Set([...this.reservedWordsPython, ...reservedWordsFromPythonScript]);
+        this.reservedWordsCaseSensitive = new Set([...this.reservedWordsPython, ...this.reservedWordsR, ...reservedWordsFromPythonScript]);
     }
+
+    read_entire_R_script(allText) {
+        let reservedWordsFromRScript = parseRScript(allText, this.topRProjectNames);
+        this.reservedWordsCaseSensitive = new Set([...this.reservedWordsPython, ...this.reservedWordsR, ...reservedWordsFromRScript]);
+    }
+
 }
 
 module.exports = Anonymizer;
