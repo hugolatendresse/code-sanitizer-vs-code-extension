@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const originalTextPythonText1 = `from sklearn.metrics.pairwise import linear_kernel, cosine_similarity, euclidean_distances
+=======
+const originalTextLongTestPython = `from sklearn.metrics.pairwise import linear_kernel, cosine_similarity, euclidean_distances
+>>>>>>> origin/dev
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import euclidean
@@ -100,7 +104,11 @@ if __name__ == "__main__":
     tfidf_with_sublinear_tf(query=query, notes=notes1)`
 
 
+<<<<<<< HEAD
 const expectedTokensTest1 = [
+=======
+const sameExpectedTokensLongTestPython = [
+>>>>>>> origin/dev
     "from",
     "sklearn",
     "metrics",
@@ -169,14 +177,27 @@ const expectedTokensTest1 = [
     "__name__",
     "__main__",
     "0",
+<<<<<<< HEAD
     "10",
     "Create", "For", "I", "In", "None", "Then", "True", "a", "add", "all", "any", "as", "break", "case", "column", "complex",
     "cosine_similarities", "filter", "from", "function", "group", "if", "into", "index", "is", "key", "map", "metrics", "not", "of",
     "query_vector", "return", "s", "some", "str", "t", "to", "try", "use", "value", "with", "x"
+=======
+     "10",
+    "Create","For","I","In","None","Then","True","a","add","all","any","as","break","case","column","complex",
+    "cosine_similarities","filter","from","function","group","if","into", "index","is","key","map","metrics","not","of",
+    "query_vector","return","s","some","str","t","to","try","use","value","with","x",
+    "array", "sample"
+>>>>>>> origin/dev
 
 ]
 
 module.exports = {
+<<<<<<< HEAD
     originalTextPythonText1,
     expectedTokensTest1
+=======
+    originalTextLongTestPython,
+    sameExpectedTokensLongTestPython
+>>>>>>> origin/dev
 };

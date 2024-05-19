@@ -7,6 +7,7 @@ let seenScripts = new Set();
 
 function activate(context) {
 
+<<<<<<< HEAD
     // Register an event listener for when the active text editor changes
     vscode.window.onDidChangeActiveTextEditor(editor => {
         if (editor) {
@@ -34,6 +35,16 @@ function activate(context) {
             }
         }
     });
+=======
+    // Can try to gain efficiencies by running something when the active text editor changes
+    // vscode.window.onDidChangeActiveTextEditor(editor => {
+    //     if (editor) {
+    //         const filePath = editor.document.uri.fsPath;
+    //         const allText = editor.document.getText(); // This gets the entire text of the active document
+    //         anonymizer.read_entire_script(filePath, allText);
+    //     }
+    // });
+>>>>>>> origin/dev
 
     let disposable = vscode.commands.registerCommand('code-sanitizer.anonymizeAndCopy', function () {
         const editor = vscode.window.activeTextEditor;
@@ -43,6 +54,7 @@ function activate(context) {
 
             const selection = editor.selection;
             const selectedText = editor.document.getText(selection);
+<<<<<<< HEAD
             // printDebugInfo("selectedText", selectedText)
 
             // Check if it's a python script and add python-related reserved words
@@ -52,6 +64,9 @@ function activate(context) {
                 anonymizer.read_entire_python_script(allText);
             }
 
+=======
+            anonymizer.read_entire_script(editor.document.uri.fsPath, editor.document.getText());
+>>>>>>> origin/dev
             let modifiedText = anonymizer.anonymize(selectedText);
             vscode.env.clipboard.writeText(modifiedText)
         }
@@ -69,7 +84,7 @@ function activate(context) {
             });
         }
     });
-    
+
     context.subscriptions.push(disposableUnanonymizeAndPaste);
 }
 
