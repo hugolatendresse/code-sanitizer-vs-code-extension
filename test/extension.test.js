@@ -356,7 +356,7 @@ suite('Python Parser Test Suite', () => {
 
         // Assert that the third line is as before
         const pastedLines = document.getText().split('\n');
-        assert.strictEqual(pastedLines[2], "import pandas as pd\r");
+        assert.strictEqual(pastedLines[2], "lambda, def, return;\r");
 
         // Set clipboard to something random
         await vscode.env.clipboard.writeText("random text");
@@ -403,6 +403,8 @@ suite('Python Parser Test Suite', () => {
         assert.strictEqual(actual, expected);
     })
     test('Test 02 pythonparser (100 lines)', async () => {
+        assert.strictEqual("TODO", "finish test");
+
         let doc = await vscode.workspace.openTextDocument({content: ' '});
         let editor = await vscode.window.showTextDocument(doc);
         let document = editor.document;
@@ -489,6 +491,9 @@ suite('Python Parser Test Suite', () => {
 suite('R Parser Test Suite', () => {
 
     test('Test 00 r_Parser (12 lines)', async () => {
+        assert.strictEqual("TODO", "finish test");
+
+
         const rScript = `
         # Load the necessary libraries
         library(ggplot2)
@@ -525,6 +530,8 @@ suite('R Parser Test Suite', () => {
     });
 
     test('Test 01 r_parser (no libraries)', async () => {
+        assert.strictEqual("TODO", "finish test");
+
         let doc = await vscode.workspace.openTextDocument({content: ' '});
         let editor = await vscode.window.showTextDocument(doc);
         let document = editor.document;
@@ -606,6 +613,8 @@ suite('R Parser Test Suite', () => {
 
 
     test('Test 02 r_parser (100 lines)', async () => {
+        assert.strictEqual("TODO", "finish test");
+
         let doc = await vscode.workspace.openTextDocument({content: ' '});
         let editor = await vscode.window.showTextDocument(doc);
         let document = editor.document;
