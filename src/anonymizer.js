@@ -30,7 +30,6 @@ class Anonymizer {
         // printDebugInfo("constructor topPyPIProjectNames", this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames type", typeof this.topPyPIProjectNames);
         // printDebugInfo("constructor topPyPIProjectNames size", this.topPyPIProjectNames.size);
-       
     }
 
     generateRandomString(length = 8) {
