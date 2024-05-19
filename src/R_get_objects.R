@@ -32,5 +32,5 @@ for (pkg in packages) {
   package_objects[[pkg]] <- list_and_detach_package(pkg)
 }
 
-write_json(package_objects, "package_objects.json")
+write_json(package_objects, "assets/R_packages_objects.json")
 # print(package_objects)
