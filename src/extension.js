@@ -1,6 +1,5 @@
 const vscode = require('vscode');
 const Anonymizer = require('./anonymizer');
-const {printDebugInfo} = require("./utils-testing");
 
 let anonymizer = new Anonymizer();
 let seenScripts = new Set();
@@ -43,7 +42,6 @@ function activate(context) {
 
             const selection = editor.selection;
             const selectedText = editor.document.getText(selection);
-            // printDebugInfo("selectedText", selectedText)
 
             // Check if it's a python script and add python-related reserved words
             // TODO remove this!!! we want to run only on active text editor change now
