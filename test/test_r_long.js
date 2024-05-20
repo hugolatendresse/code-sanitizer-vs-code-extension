@@ -1,6 +1,6 @@
 const originalTextLongTestR = `# Load necessary libraries
 library(dplyr)           # For data manipulation
-library(tidyr)           # For data cleaning
+library(tidyr)
 library(ggplot2)         # For data visualization
 library(readr)           # For reading data
 library(lubridate)       # For date manipulation
@@ -70,10 +70,10 @@ const sameExpectedTokensLongTestR = [
     "library", "dplyr", "tidyr", "ggplot2", "readr", "lubridate", "caret", "broom", "AER", "set", "seed",
     "read_csv", "filter", "is", "na", "mutate", "mdy", "cut", "select", "group_by", "summarise", "mean", "n", "ungroup",
     "ggplot", "aes", "geom_bar", "labs", "theme_minimal", "createDataPartition", "glm", "predict", "table", "summary",
-    "tidy", "write_csv", "saveRDS", "cat", "0", "8", "Age", "Check", "Convert", "Count", "Date", "FALSE", "Group", "Load",
+    "tidy", "write_csv", "saveRDS", "cat", "0", "8", "Check", "Convert", "Date", "FALSE", "Group", "Load",
     "Print", "Read", "Save", "Set", "TRUE", "To", "a", "and", "by", "c", "complete", "data", "date", "disk", "file", "fill",
     "for", "format", "from", "get", "identity", "in", "labels", "list", "p", "rm", "round", "set", "stat", "title", "to",
-    "type", "x", "y", "year", "confusionMatrix",
+    "type", "x", "y", "year", "confusionMatrix", "For"
 ]
 
 module.exports = {

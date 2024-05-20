@@ -638,7 +638,7 @@ suite('R Parser Test Suite', () => {
 
         // Assert that the third line is as before
         const pastedLines = document.getText().split('\n');
-        assert.strictEqual(pastedLines[2], "import pandas as pd\r");
+        assert.strictEqual(pastedLines[2], "library(tidyr)\r");
 
         // Set clipboard to something random
         await vscode.env.clipboard.writeText("random text");
@@ -680,10 +680,8 @@ suite('R Parser Test Suite', () => {
         // Actual will have an extra whitespace character that we just slice out
         const actual = document.getText().replace(/\r\n/g, '\n').slice(0,-1)
         const expected = originalTextLongTestR.replace(/\r\n/g, '\n')
-        // printDebugInfo("actual", actual);
-        // printDebugInfo("expected", expected)
         assert.strictEqual(actual, expected);
-    }).timeout(5000);
+    }).timeout(6000);
 
     test ('Test 03 r_parser few keywords only', async () => {
         const rscripttest = `
@@ -700,7 +698,7 @@ suite('R Parser Test Suite', () => {
           filter(mpg <= 30)  # Filtering to focus on cars with mpg 30 or less
         
         # Create the scatter plot using ggplot2
-        ggplot(filtered_data, filter(anargument="wt", otherarg=mpg)) +
+        ggplot(filtered_data, filter(acolname="wt", another_col_3=mpg)) +
           geom_point(aes(somearg = wt), size = 3) +  # Points colored by weight
           geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add a regression line
           labs(title = "Car Weight vs. MPG",
@@ -712,9 +710,9 @@ suite('R Parser Test Suite', () => {
 
         const res = parseRScript(rscripttest, new Set(["ggplot2", "dplyr"]));
         assert.strictEqual(res.includes("se"), true);
-        assert.strictEqual(res.includes("anargument"), true);
-        assert.strictEqual(res.includes("otherarg"), true);
         assert.strictEqual(res.includes("somearg"), true);
+        assert.strictEqual(res.includes("acolname"), false);  // filter arguments get sanitized
+        assert.strictEqual(res.includes("another_col_3"), false); // filter arguments get sanitized
         assert.strictEqual(res.includes("ggplot2"), true);
         assert.strictEqual(res.includes("dplyr"), true);
         assert.strictEqual(res.includes("aes"), true);

@@ -49,7 +49,7 @@ function isParentOfCallR(node, keyWords) {
 function isRKeywordArgumentOfMethodFromLibrary(node, keyWordsArray) {
     try {
         // Some functions except user-defined keywords that must be sanitizes
-        const functionExceptions = ["mutate", "summarize", "filter"];
+        const functionExceptions = ["mutate", "summarize","summarise", "filter"];
         keyWordsArray = keyWordsArray.filter(keyword => !functionExceptions.includes(keyword)); // filter is not in-place in JS
 
         let libraryCond = keyWordsArray.some(keyword => node.parent.parent.text.startsWith(keyword));
