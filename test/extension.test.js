@@ -3,9 +3,12 @@
 
 const parsePythonScript = require('../src/python_parser');
 const topPyPIProjectNames = new Set(require('../assets/top-pypi-project-names-all'));
+const topRProjectNames = new Set(require('../assets/R_supported_packages.json'));
 const {printDebugInfo, assertAllTokensDifferent, assertSomeTokensSame, assertSetsEqual} = require('../src/utils-testing');
 const vscode = require('vscode');
 const assert = require('assert');
+const parseRScript = require("../src/R_parser");
+const {originalTextPythonNoImports, sameExpectedTokensLongTestPython} = require("./test_python");
 
 suite('Extension Test Suite', () => {
 
