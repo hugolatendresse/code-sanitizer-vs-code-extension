@@ -406,7 +406,7 @@ suite('Python Parser Test Suite', () => {
         let editor = await vscode.window.showTextDocument(doc);
         let document = editor.document;
         assert.ok(editor, 'No active editor');
-        const {originalTextLongTestPython, sameExpectedTokensLongTestPython}  = require('./test_python')
+        const {originalTextLongTestPython, sameExpectedTokensLongTestPython}  = require('./test_python_long')
         // printDebugInfo("originalText", originalText)
         // printDebugInfo("sameExpectedTokens", sameExpectedTokens)
         await editor.edit(editBuilder => {
@@ -612,7 +612,7 @@ suite('R Parser Test Suite', () => {
         let editor = await vscode.window.showTextDocument(doc);
         let document = editor.document;
         assert.ok(editor, 'No active editor');
-        const {originalTextLongTestR, sameExpectedTokensLongTestR}  = require('./test_r')
+        const {originalTextLongTestR, sameExpectedTokensLongTestR}  = require('./test_r_long')
         // printDebugInfo(originalText)
         await editor.edit(editBuilder => {
             editBuilder.insert(new vscode.Position(0, 0), originalTextLongTestR);

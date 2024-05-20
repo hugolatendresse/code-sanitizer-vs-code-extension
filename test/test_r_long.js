@@ -4,6 +4,7 @@ library(tidyr)           # For data cleaning
 library(ggplot2)         # For data visualization
 library(readr)           # For reading data
 library(lubridate)       # For date manipulation
+library(verysecret)      # a custom-made library that should get sanitized
 library(caret)           # For model training
 library(broom)           # To tidy models
 library(AER)             # For actuarial models and methods
@@ -12,7 +13,7 @@ library(AER)             # For actuarial models and methods
 set.seed(123)
 
 # Read in data
-data <- read_csv("path_to_your_data.csv")
+data <- read_csv("pathtoyourdata.csv")
 
 # Data Cleaning and Manipulation
 data <- data %>%
