@@ -18,10 +18,8 @@ function addEachRTokenToResults(results, text) {
     });
 }
 
-// Adds everything that needs to be added to the list of keywords from the dictionary of imports 
-function getRLibraries(script, topRProjectNames, debug=false) {
-    const results = new Set();
-
+// Adds everything that needs to be added to the list of keywords from the dictionary of imports
+function getRLibraries(script, topRProjectNames) {
     // Create a subset of all topRProjectNames that appear in the script
     // Iterate over the tokens in the script
     const tokens = script.match(/\b\w+\b/g);
@@ -35,12 +33,19 @@ function getRLibraries(script, topRProjectNames, debug=false) {
     return topRProjectNamesInScript;
 }
 
-function parseRScript(script, topRProjectNames, debug=false) {
-    const libraries = getRLibraries(script, topRProjectNames, debug);
+function parseRScript(script, topRProjectNames) {
+    const libraries = getRLibraries(script, topRProjectNames);
 
     // Load assets/R_packages_objects.json, which is a dictionary whre keys are libraries and values are lists of functions
     let results = new Set();
     // Add all the functions from the libraries to the results set
+
+
+    // Skip if libraries is empty
+    if (libraries.size === 0) {
+        return [];
+    }
+
     libraries.forEach(library => {
         const functions = R_packages_objects[library];
         functions.forEach(func => {
