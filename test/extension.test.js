@@ -8,7 +8,6 @@ const {printDebugInfo, assertAllTokensDifferent, assertSomeTokensSame, assertSet
 const vscode = require('vscode');
 const assert = require('assert');
 const parseRScript = require("../src/R_parser");
-const {originalTextPythonNoImports, sameExpectedTokensLongTestPython} = require("./test_python");
 
 suite('Extension Test Suite', () => {
 
@@ -402,17 +401,16 @@ suite('Python Parser Test Suite', () => {
         assert.strictEqual(actual, expected);
     })
     test('Test 02 pythonparser (100 lines)', async () => {
-        assert.strictEqual("TODO", "finish test");
 
         let doc = await vscode.workspace.openTextDocument({content: ' '});
         let editor = await vscode.window.showTextDocument(doc);
         let document = editor.document;
         assert.ok(editor, 'No active editor');
-        const {originalTextPythonNoImports, sameExpectedTokensLongTestPython}  = require('./test_python')
+        const {originalTextLongTestPython, sameExpectedTokensLongTestPython}  = require('./test_python')
         // printDebugInfo("originalText", originalText)
         // printDebugInfo("sameExpectedTokens", sameExpectedTokens)
         await editor.edit(editBuilder => {
-            editBuilder.insert(new vscode.Position(0, 0), originalTextPythonNoImports);
+            editBuilder.insert(new vscode.Position(0, 0), originalTextLongTestPython);
         });
 
         // Copy and sanitize
@@ -434,7 +432,7 @@ suite('Python Parser Test Suite', () => {
         // console.log(originalText)
         // console.log("get text:")
         // console.log(document.getText())
-        assertSomeTokensSame(originalTextPythonNoImports, document.getText(), sameExpectedTokensLongTestPython);
+        assertSomeTokensSame(originalTextLongTestPython, document.getText(), sameExpectedTokensLongTestPython);
 
         // Assert that the third line is as before
         const pastedLines = document.getText().split('\n');
@@ -453,7 +451,7 @@ suite('Python Parser Test Suite', () => {
         // printDebugInfo("originalText line 280, expect 10 lines of unsanitized text", originalText);
         const clipboardText = await vscode.env.clipboard.readText();
         // printDebugInfo("vscode.env.clipboard.readText() line 282 (expect 7 lines of sanitized text)", clipboardText);
-        assertSomeTokensSame(originalTextPythonNoImports, clipboardText, sameExpectedTokensLongTestPython);  // this line randomly fails!!
+        assertSomeTokensSame(originalTextLongTestPython, clipboardText, sameExpectedTokensLongTestPython);  // this line randomly fails!!
 
         // Replace all text in the editor with "hello world"
         // const text_before_helloworld = document.getText();
@@ -472,14 +470,14 @@ suite('Python Parser Test Suite', () => {
         });
 
         // Replace all text in the editor with the unsanitized text
-        assertAllTokensDifferent(originalTextPythonNoImports, document.getText());  // Should have nothing in common with Hello World
+        assertAllTokensDifferent(originalTextLongTestPython, document.getText());  // Should have nothing in common with Hello World
         await vscode.commands.executeCommand('editor.action.selectAll');
         await vscode.commands.executeCommand('code-sanitizer.unanonymizeAndPaste');
 
         // Assert that the finalText is equal to the originalText
         // Actual will have an extra whitespace character that we just slice out
         const actual = document.getText().replace(/\r\n/g, '\n').slice(0,-1)
-        const expected = originalTextPythonNoImports.replace(/\r\n/g, '\n')
+        const expected = originalTextLongTestPython.replace(/\r\n/g, '\n')
         // printDebugInfo("actual", actual);
         // printDebugInfo("expected", expected)
         assert.strictEqual(actual, expected);
