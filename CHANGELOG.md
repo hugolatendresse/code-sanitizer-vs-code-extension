@@ -1,5 +1,8 @@
 # Change Log
 
+### 1.0.0
+- Now supports R
+
 ### 0.2.4
 - Not sanitizing single digits and letters
 
