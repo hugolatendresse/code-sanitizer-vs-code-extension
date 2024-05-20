@@ -72,8 +72,8 @@ const sameExpectedTokensLongTestR = [
     "ggplot", "aes", "geom_bar", "labs", "theme_minimal", "createDataPartition", "glm", "predict", "table", "summary",
     "tidy", "write_csv", "saveRDS", "cat", "0", "8", "Age", "Check", "Convert", "Count", "Data", "FALSE", "Group", "Load",
     "Print", "Read", "Save", "Set", "TRUE", "To", "a", "and", "by", "c", "complete", "data", "date", "disk", "file", "fill",
-    "for", "format", "from", "get", "identify", "in", "labels", "list", "p", "rm", "round", "set", "stat", "title", "to",
-    "type", "x", "y", "year"
+    "for", "format", "from", "get", "identity", "in", "labels", "list", "p", "rm", "round", "set", "stat", "title", "to",
+    "type", "x", "y", "year", "confusionMatrix",
 ]
 
 module.exports = {
