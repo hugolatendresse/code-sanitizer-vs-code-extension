@@ -623,10 +623,11 @@ suite('R Parser Test Suite', () => {
         const range = new vscode.Range(0, 0, document.lineCount - 1, lastLine.text.length);
         editor.selection = new vscode.Selection(range.start, range.end);
         await vscode.commands.executeCommand('code-sanitizer.anonymizeAndCopy');
-        // printDebugInfo("clipboard check", await vscode.env.clipboard.readText();)
-
         // Clear the editor
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        // TEST MAKES IT HERE WITH DEFAULT TIMEOUT
         await vscode.commands.executeCommand('editor.action.selectAll');
+        // TEST NEVER REACHED HERE WITH DEFAULT TIMEOUT. AS IS THE SELECT ALL IS TAKING LONG!
         await vscode.commands.executeCommand('editor.action.deleteLines');
 
         // Paste in editor so that editor contains sanitized text
@@ -646,7 +647,7 @@ suite('R Parser Test Suite', () => {
         // printDebugInfo("document.getText() line 274 (expected 10 lines of sanitized text)", document.getText());
         await vscode.commands.executeCommand('editor.action.selectAll');
         await vscode.commands.executeCommand('editor.action.clipboardCopyAction');
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // await new Promise(resolve => setTimeout(resolve, 100));
 
         // Assert that every token in selection is different from the original text, except for SQL words
         // printDebugInfo("originalText line 280, expect 10 lines of unsanitized text", originalText);
@@ -682,7 +683,7 @@ suite('R Parser Test Suite', () => {
         // printDebugInfo("actual", actual);
         // printDebugInfo("expected", expected)
         assert.strictEqual(actual, expected);
-    });
+    }).timeout(5000);
 
     test ('Test 03 r_parser few keywords only', async () => {
         const rscripttest = `
