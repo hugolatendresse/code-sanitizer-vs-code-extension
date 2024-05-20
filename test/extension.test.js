@@ -608,8 +608,6 @@ suite('R Parser Test Suite', () => {
 
 
     test('Test 02 r_parser (100 lines)', async () => {
-        assert.strictEqual("TODO", "finish test");
-
         let doc = await vscode.workspace.openTextDocument({content: ' '});
         let editor = await vscode.window.showTextDocument(doc);
         let document = editor.document;
