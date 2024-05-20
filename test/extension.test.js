@@ -492,6 +492,9 @@ suite('R Parser Test Suite', () => {
 
     // TODO
     test('Test 00 r_Parser (12 lines)', async () => {
+
+        assert.strictEqual("TODO", "finish test");
+
         const rScript = `
         # Load the necessary libraries
         library(ggplot2)
