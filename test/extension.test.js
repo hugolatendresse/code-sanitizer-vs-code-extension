@@ -686,4 +686,40 @@ suite('R Parser Test Suite', () => {
         assert.strictEqual(actual, expected);
     });
 
+    test ('Test 03 r_parser few keywords only', async () => {
+        const rscripttest = `
+        # Load the necessary libraries
+        library(ggplot2)
+        library("dplyr")
+        
+        # Load data (you can replace this with your actual data source)
+        data("mtcars")  # Using mtcars dataset for demonstration
+        
+        # Use dplyr to manipulate the dataset
+        filtered_data <- mtcars %>%
+          select(wt, mpg) %>%
+          filter(mpg <= 30)  # Filtering to focus on cars with mpg 30 or less
+        
+        # Create the scatter plot using ggplot2
+        ggplot(filtered_data, filter(anargument="wt", otherarg=mpg)) +
+          geom_point(aes(somearg = wt), size = 3) +  # Points colored by weight
+          geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add a regression line
+          labs(title = "Car Weight vs. MPG",
+               x = "Weight (1000 lbs)",
+               y = "Miles per Gallon",
+               color = "Weight") +
+          theme_minimal()  # Use a minimal theme for the plot
+		`
+
+        const res = parseRScript(rscripttest, new Set(["ggplot2", "dplyr"]));
+        assert.strictEqual(res.includes("se"), true);
+        assert.strictEqual(res.includes("anargument"), true);
+        assert.strictEqual(res.includes("otherarg"), true);
+        assert.strictEqual(res.includes("somearg"), true);
+        assert.strictEqual(res.includes("ggplot2"), true);
+        assert.strictEqual(res.includes("dplyr"), true);
+        assert.strictEqual(res.includes("aes"), true);
+        assert.strictEqual(res.includes("color"), true);
+        assert.strictEqual(res.includes("theme_minimal"), true);
+    });
 })
