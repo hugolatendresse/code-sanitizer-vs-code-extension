@@ -47,11 +47,15 @@ function isParentOfCallR(node, keyWords) {
 
 
 function isRKeywordArgumentOfMethodFromLibrary(node, keyWordsArray) {
-    // TODO if no change here, use same as python!
     try {
+        // Some functions except user-defined keywords that must be sanitizes
+        const functionExceptions = ["mutate", "summarize", "filter"];
+        keyWordsArray = keyWordsArray.filter(keyword => !functionExceptions.includes(keyword)); // filter is not in-place in JS
+
         let libraryCond = keyWordsArray.some(keyword => node.parent.parent.text.startsWith(keyword));
         let keywordCond = node.type === 'keyword_argument' && node.children[0].type === 'identifier' && node.parent.parent.type === 'call';
-        return libraryCond && keywordCond;
+        const cond = libraryCond && keywordCond;
+        return cond;
     } catch (error) {
         return false;
     }
