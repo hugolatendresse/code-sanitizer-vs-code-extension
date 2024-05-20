@@ -556,7 +556,7 @@ suite('R Parser Test Suite', () => {
 
         // Assert that the third line is as before
         const pastedLines = document.getText().split('\n');
-        assert.strictEqual(pastedLines[2], "import pandas as pd\r");
+        assert.strictEqual(pastedLines[6], "set.seed(9)\r");
 
         // Set clipboard to something random
         await vscode.env.clipboard.writeText("random text");

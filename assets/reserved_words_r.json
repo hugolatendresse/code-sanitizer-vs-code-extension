@@ -192,5 +192,6 @@
   "rnorm",
   "runif",
   "xlab",
-  "ylab"
+  "ylab",
+  "seed"
 ]

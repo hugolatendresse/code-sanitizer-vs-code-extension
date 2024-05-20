@@ -4,7 +4,7 @@ library(somerandomdoesntexist)
 library(whatisthisoneitdoesntexist)
 require(anothermadeuplibrary)
 
-set.seed(123)
+set.seed(9)
 data <- data.frame(
   ID = 1:1000,
   Age = sample(18:70, 1000, replace = TRUE),
@@ -60,9 +60,9 @@ cat("Script execution complete. Model and plots generated.")
 
 
 const sameExpectedTokensRNoLibrary = [
-    "1", "17", "18", "19", "Convert", "Group", "Save", "a", "and", "by", "c", "column", "data", "disk", "frame", "get", "library", "of", "on", "require", "residuals", "set", "sum", "to", "with",
+    "1", "17", "18", "19", "9", "Convert", "Group", "Save", "a", "and", "by", "c", "column", "data", "disk", "frame", "get", "library", "of", "on", "require", "residuals", "set", "sum", "to", "with",
     "sample", "replace", "TRUE", "round", "rnorm", "mean", "sd", "runif", "cut", "labels", "aggregate", "cbind", "FUN", "function", "x", "gsub", "lm", "summary", "predict", "newdata", "hist", "main", "xlab", "col", "border", "boxplot", "ylab", "plot", "pch", "abline", "save", "file", "cat",
-    "colnames",
+    "colnames", "seed"
 ]
 
 module.exports = {
