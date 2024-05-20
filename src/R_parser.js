@@ -5,6 +5,7 @@ const { printDebugInfo } = require('./utils-testing');
 const assert = require('assert');
 const {getAllNodes, findNodeByText, findAllPythonKeywordsInTree, findAllPythonKeywordsInQuery} = require("./utils-python");
 const Parser = require("tree-sitter");
+const Python = require("tree-sitter-python");
 // const R = require("tree-sitter-r");
 
 
@@ -33,6 +34,67 @@ function getRLibraries(script, topRProjectNames) {
     return topRProjectNamesInScript;
 }
 
+function isParentOfCallR(node, keyWords) {
+    try {
+        let callCondition = node.children.length === 3 && node.children[1].text === '.' && node.children[2].type === 'identifier';
+        const firstIdentifier = node.children[0].text; // TODO function name shold be a keyword!
+        // let libraryCond = keyWords.some(keyword => firstIdentifier.startsWith(keyword));
+        return callCondition && libraryCond;
+    } catch (error) {
+        return false;
+    }
+}
+
+
+function isRKeywordArgumentOfMethodFromLibrary(node, keyWordsArray) {
+    // TODO if no change here, use same as python!
+    try {
+        let libraryCond = keyWordsArray.some(keyword => node.parent.parent.text.startsWith(keyword));
+        let keywordCond = node.type === 'keyword_argument' && node.children[0].type === 'identifier' && node.parent.parent.type === 'call';
+        return libraryCond && keywordCond;
+    } catch (error) {
+        return false;
+    }
+}
+
+
+
+function findAllRKeywordsInTree(tree, keyWordsArray) {
+    const result = [];
+    let visitedChildren = false;
+    let cursor = tree.walk();
+    while (true) {
+        if (!visitedChildren) {
+
+            // Add different types of keywords
+            if (isRKeywordArgumentOfMethodFromLibrary(cursor.currentNode, keyWordsArray)) {
+                // Add keywords of arguments in function calls
+                const keyword = cursor.currentNode.children[0].text;
+                result.push(keyword);
+            }
+
+            // Continue walking the tree
+            if (!cursor.gotoFirstChild()) {
+                visitedChildren = true;
+            }
+        } else if (cursor.gotoNextSibling()) {
+            visitedChildren = false;
+        } else if (!cursor.gotoParent()) {
+            break;
+        }
+    }
+    return result;
+}
+
+
+function findAllRKeywordsInQuery(script, keyWordsArray) {
+      const parser = new Parser();
+      parser.setLanguage(Python);
+      const tree = parser.parse(script);
+      return findAllRKeywordsInTree(tree, keyWordsArray);
+
+}
+
 function parseRScript(script, topRProjectNames) {
     const libraries = getRLibraries(script, topRProjectNames);
 
@@ -53,12 +115,13 @@ function parseRScript(script, topRProjectNames) {
         });
     });
 
-    // TODO also need to add argument names of those functions!!
-    // const newKeyWords = findAllRKeywordsInQuery(script, libraries);
+    let keyWords = new Set([...results, ...libraries]);
 
+    const Arguments = findAllRKeywordsInQuery(script, [...keyWords]);
+
+    const keywordsAndArguments = new Set([...keyWords, ...Arguments]);
     // Combine the two sets
-    results = new Set([...results, ...libraries]);
-    return Array.from(results);
+    return Array.from(keywordsAndArguments);
 }
 
 // Export parsePythonScript so it can be used in extension.js
@@ -81,8 +144,8 @@ if (require.main === module) {
           filter(mpg <= 30)  # Filtering to focus on cars with mpg 30 or less
         
         # Create the scatter plot using ggplot2
-        ggplot(filtered_data, aes(x = wt, y = mpg)) +
-          geom_point(aes(color = wt), size = 3) +  # Points colored by weight
+        ggplot(filtered_data, filter(anargument="wt", otherarg=mpg)) +
+          geom_point(aes(somearg = wt), size = 3) +  # Points colored by weight
           geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add a regression line
           labs(title = "Car Weight vs. MPG",
                x = "Weight (1000 lbs)",
@@ -92,5 +155,9 @@ if (require.main === module) {
 		`
 
     res = parseRScript(rscripttest, new Set(["ggplot2", "dplyr"]));
-    console.log("test");
+    res.includes("se")
+    res.includes("anargument")
+    res.includes("otherarg")
+    res.includes("somearg")
+    // TODO turn this into a unit test
 }
